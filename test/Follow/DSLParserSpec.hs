@@ -14,12 +14,12 @@ spec = do
     
     it "copies VERSION value as value" $ do
       let (Right parsed) = parseDSL success
-      parsedDSLVersion parsed `shouldBe` "1.0"
+      pVersion parsed `shouldBe` "1.0"
 
     it "copies FOLLOW value as title" $ do
       let (Right parsed) = parseDSL success
-      parsedDSLTitle parsed `shouldBe` "foo"
+      pTitle parsed `shouldBe` "foo"
 
     it "copies DESCRIBED BY value as description" $ do
       let (Right parsed) = parseDSL success
-      parsedDSLDescription parsed `shouldBe` "description"
+      pDescription parsed `shouldBe` "description"

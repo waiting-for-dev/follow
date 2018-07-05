@@ -7,9 +7,9 @@ module Follow.DSLParser
 import Text.Parsec
 
 data ParsedDSL = ParsedDSL
-  {  parsedDSLVersion :: String
-  ,  parsedDSLTitle :: String
-  ,  parsedDSLDescription :: String
+  {  pVersion :: String
+  ,  pTitle :: String
+  ,  pDescription :: String
   } deriving (Show)
 
 type ParsedResult = Either ParseError ParsedDSL
@@ -34,6 +34,6 @@ parseDSL :: String -> ParsedResult
 parseDSL toParse = case parse format "(source)" toParse of
   Left error -> Left error
   Right (version, title, description) -> Right (ParsedDSL {
-                                                     parsedDSLVersion = version
-                                                   , parsedDSLTitle = title
-                                                   , parsedDSLDescription = description })
+                                                     pVersion = version
+                                                   , pTitle = title
+                                                   , pDescription = description })
