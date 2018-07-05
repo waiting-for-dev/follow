@@ -16,6 +16,7 @@ module Follow.DSLParser
   (
     parseDSL
   , ParsedDSL (..)
+  , ParsedResult
   ) where
 
 import Text.Parsec
@@ -27,6 +28,7 @@ data ParsedDSL = ParsedDSL
   ,  pDescription :: String -- ^ A description for the recipe
   } deriving (Show)
 
+-- | The result of a parsing: a 'ParsedDSL' or an error.
 type ParsedResult = Either ParseError ParsedDSL
 
 format :: Parsec String () (String, String, String)
