@@ -33,7 +33,4 @@ descriptionFormat = spaces *> string "DESCRIBED BY" *> spaces *> many1 (noneOf "
 parseDSL :: String -> ParsedResult
 parseDSL toParse = case parse format "(source)" toParse of
   Left error -> Left error
-  Right (version, title, description) -> Right (ParsedDSL {
-                                                     pVersion = version
-                                                   , pTitle = title
-                                                   , pDescription = description })
+  Right (version, title, description) -> Right (ParsedDSL version title description)
