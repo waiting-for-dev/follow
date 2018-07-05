@@ -21,30 +21,34 @@ module Follow.DSLParser
 
 import Text.Parsec
 
+type PVersion = String
+type PTitle = String
+type PDescription = String
+
 -- | Haskell representation of the information extracted from the DSL.
 data ParsedDSL = ParsedDSL
-  {  pVersion :: String -- ^ Version of the DSL used.
-  ,  pTitle :: String -- ^ Title for the recipe; what is being followed.
-  ,  pDescription :: String -- ^ A description for the recipe
+  {  pVersion :: PVersion -- ^ Version of the DSL used.
+  ,  pTitle :: PTitle -- ^ Title for the recipe; what is being followed.
+  ,  pDescription :: PDescription -- ^ A description for the recipe
   } deriving (Show)
 
 -- | The result of a parsing: a 'ParsedDSL' or an error.
 type ParsedResult = Either ParseError ParsedDSL
 
-format :: Parsec String () (String, String, String)
+format :: Parsec String () (PVersion, PTitle, PDescription)
 format = do
   version <- versionFormat
   title <- titleFormat
   description <- descriptionFormat
   return (version, title, description)
 
-versionFormat :: Parsec String () String
+versionFormat :: Parsec String () PVersion
 versionFormat = spaces *> string "VERSION" *> spaces *> many1 (noneOf "\n\r") <* endOfLine
 
-titleFormat :: Parsec String () String
+titleFormat :: Parsec String () PTitle
 titleFormat = spaces *> string "FOLLOW" *> spaces *> many1 (noneOf "\n\r") <* endOfLine
 
-descriptionFormat :: Parsec String () String
+descriptionFormat :: Parsec String () PDescription
 descriptionFormat = spaces *> string "DESCRIBED BY" *> spaces *> many1 (noneOf "\n\r") <* optional endOfLine
 
 -- | Parses given DSL to a 'ParsedDSL' on success.
