@@ -19,7 +19,7 @@ module Follow.DSLParser
   , ParsedResult
   ) where
 
-import Text.Parsec
+import           Text.Parsec
 
 type PVersion = String
 type PTitle = String
@@ -27,8 +27,8 @@ type PDescription = String
 
 -- | Haskell representation of the information extracted from the DSL.
 data ParsedDSL = ParsedDSL
-  {  pVersion :: PVersion -- ^ Version of the DSL used.
-  ,  pTitle :: PTitle -- ^ Title for the recipe; what is being followed.
+  {  pVersion     :: PVersion -- ^ Version of the DSL used.
+  ,  pTitle       :: PTitle -- ^ Title for the recipe; what is being followed.
   ,  pDescription :: PDescription -- ^ A description for the recipe
   } deriving (Show)
 
