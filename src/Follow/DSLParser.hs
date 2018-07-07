@@ -10,56 +10,57 @@ DESCRIBED BY All the amazing articles from Joe Doe
 @
 
 That recipe could be parsed with 'parseDSL', which would return a
-'ParsedDSL' data type with the extracted information.
+'Recipe' data type with the extracted information.
 -}
 module Follow.DSLParser
   ( parseDSL
-  , ParsedDSL(..)
-  , ParsedResult
+  , Recipe(..)
+  , ParseResult
   ) where
 
 import           Text.Parsec
 
-type PVersion = String
+type RVersion = String
 
-type PTitle = String
+type RTitle = String
 
-type PDescription = String
+type RDescription = String
 
--- | Haskell representation of the information extracted from the DSL.
-data ParsedDSL = ParsedDSL
-  { pVersion     :: PVersion -- ^ Version of the DSL used.
-  , pTitle       :: PTitle -- ^ Title for the recipe; what is being followed.
-  , pDescription :: PDescription -- ^ A description for the recipe
+-- | Recipe to fetch content for a followee; haskell representation of
+-- the information extracted from the DSL.
+data Recipe = Recipe
+  { rVersion     :: RVersion -- ^ Version of the DSL used.
+  , rTitle       :: RTitle -- ^ Title for the recipe; what is being followed.
+  , rDescription :: RDescription -- ^ A description for the recipe
   } deriving (Show)
 
--- | The result of a parsing: a 'ParsedDSL' or an error.
-type ParsedResult = Either ParseError ParsedDSL
+-- | The result of a parsing: a 'Recipe' or an error.
+type ParseResult = Either ParseError Recipe
 
-format :: Parsec String () (PVersion, PTitle, PDescription)
+format :: Parsec String () (RVersion, RTitle, RDescription)
 format = do
   version <- versionFormat
   title <- titleFormat
   description <- descriptionFormat
   return (version, title, description)
 
-versionFormat :: Parsec String () PVersion
+versionFormat :: Parsec String () RVersion
 versionFormat =
   spaces *> string "VERSION" *> spaces *> many1 (noneOf "\n\r") <* endOfLine
 
-titleFormat :: Parsec String () PTitle
+titleFormat :: Parsec String () RTitle
 titleFormat =
   spaces *> string "FOLLOW" *> spaces *> many1 (noneOf "\n\r") <* endOfLine
 
-descriptionFormat :: Parsec String () PDescription
+descriptionFormat :: Parsec String () RDescription
 descriptionFormat =
   spaces *> string "DESCRIBED BY" *> spaces *> many1 (noneOf "\n\r") <*
   optional endOfLine
 
--- | Parses given DSL to a 'ParsedDSL' on success.
-parseDSL :: String -> ParsedResult
+-- | Parses given DSL to a 'Recipe' on success.
+parseDSL :: String -> ParseResult
 parseDSL toParse =
   case parse format "(source)" toParse of
     Left error -> Left error
     Right (version, title, description) ->
-      Right (ParsedDSL version title description)
+      Right (Recipe version title description)
