@@ -5,8 +5,8 @@ The DSL for a recipe must conform with following format:
 
 @
 VERSION 1.0
-FOLLOW Joe Doe
-DESCRIBED BY All the amazing articles from Joe Doe
+TITLE Joe Doe
+DESCRIPTION All the amazing articles from Joe Doe
 @
 
 That recipe could be parsed with 'parseDSL', which would return a
@@ -50,11 +50,11 @@ versionFormat =
 
 titleFormat :: Parsec String () RTitle
 titleFormat =
-  spaces *> string "FOLLOW" *> spaces *> many1 (noneOf "\n\r") <* endOfLine
+  spaces *> string "TITLE" *> spaces *> many1 (noneOf "\n\r") <* endOfLine
 
 descriptionFormat :: Parsec String () RDescription
 descriptionFormat =
-  spaces *> string "DESCRIBED BY" *> spaces *> many1 (noneOf "\n\r") <*
+  spaces *> string "DESCRIPTION" *> spaces *> many1 (noneOf "\n\r") <*
   optional endOfLine
 
 -- | Parses given DSL to a 'Recipe' on success.
