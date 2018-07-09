@@ -10,7 +10,7 @@ spec = do
     let success =
           unlines ["VERSION 1.0", "TITLE foo", "DESCRIPTION description"]
     let (Right (version, title, description)) = parse format "test" success
-    it "defines VERSION in the first line" $ do version `shouldBe` "1.0"
-    it "defines TITLE in the second line" $ do title `shouldBe` "foo"
-    it "defines DESCRIPTION in the ending line" $ do
+    it "defines VERSION in the first line" $ version `shouldBe` "1.0"
+    it "defines TITLE in the second line" $ title `shouldBe` "foo"
+    it "defines DESCRIPTION in the ending line" $
       description `shouldBe` "description"
