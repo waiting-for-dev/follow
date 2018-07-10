@@ -11,6 +11,16 @@ DESCRIPTION All the amazing articles from Joe Doe
 -}
 module Follow.DSL.Format
   ( format
+  , nameFormat
+  , versionLineFormat
+  , titleLineFormat
+  , descriptionLineFormat
+  , versionFormat
+  , titleFormat
+  , descriptionFormat
+  , multiWordFormat
+  , innerLineFormat
+  , endingLineFormat
   ) where
 
 import           Data.Functor (($>))
@@ -19,38 +29,72 @@ import           Text.Parsec
 -- | Format expected for the DSL String
 format :: Parsec String () (String, String, String)
 format = do
-  version <- versionFormat
-  title <- titleFormat
-  description <- descriptionFormat
+  version <- versionLineFormat
+  title <- titleLineFormat
+  description <- descriptionLineFormat
   return (version, title, description)
 
+-- | Format for a line which is not the ending line
 innerLineFormat :: String -> Parsec String () String -> Parsec String () String
-innerLineFormat name valueFormat =
-  lineStart *> string name *> lineSeparation *> valueFormat <* innerLineEnd
+innerLineFormat = lineFormat False
 
+-- | Format for the ending line
 endingLineFormat :: String -> Parsec String () String -> Parsec String () String
-endingLineFormat name valueFormat =
-  lineStart *> string name *> lineSeparation *> valueFormat <* endingLineEnd
+endingLineFormat = lineFormat True
 
-lineStart :: Parsec String () ()
-lineStart = optional lineSeparation
+-- | Format for the line containg the DSL version
+versionLineFormat :: Parsec String () String
+versionLineFormat = innerLineFormat "VERSION" versionFormat
 
-lineSeparation :: Parsec String () ()
-lineSeparation = many1 (oneOf " \t") $> ()
-
-innerLineEnd :: Parsec String () ()
-innerLineEnd = optional lineSeparation *> endOfLine $> ()
-
-endingLineEnd :: Parsec String () ()
-endingLineEnd = optional lineSeparation *> optional endOfLine $> ()
-
+-- | Format for the version number used in the version line
 versionFormat :: Parsec String () String
-versionFormat = innerLineFormat "VERSION" $ many1 $ digit <|> char '.'
+versionFormat = do
+  major <- many1 digit
+  char '.'
+  minor <- many1 digit
+  return $ major ++ "." ++ minor
 
+-- | Format for the line containing the recipe title
+titleLineFormat :: Parsec String () String
+titleLineFormat = innerLineFormat "TITLE" titleFormat
+
+-- | Format for the recipe title
 titleFormat :: Parsec String () String
-titleFormat = innerLineFormat "TITLE" $ many1 alphaNum
+titleFormat = multiWordFormat
 
+-- | Format for the line containing the recipe description
+descriptionLineFormat :: Parsec String () String
+descriptionLineFormat = endingLineFormat "DESCRIPTION" descriptionFormat
+
+-- | Format for the recipe description
 descriptionFormat :: Parsec String () String
-descriptionFormat =
-  spaces *> string "DESCRIPTION" *> spaces *> many1 alphaNum <*
-  optional endOfLine
+descriptionFormat = multiWordFormat
+
+-- | Format for the expected reserved words in the DSL
+nameFormat :: String -> Parsec String () String
+nameFormat = string
+
+-- | Format for a value consisting of multiple words
+multiWordFormat :: Parsec String () String
+multiWordFormat = unwords <$> sepEndBy1 (many1 alphaNum) (many1 $ oneOf " \t")
+
+lineFormat ::
+     Bool -> String -> Parsec String () String -> Parsec String () String
+lineFormat isEnding name valueFormat =
+  lineStartFormat *> nameFormat name *> lineSeparationFormat *> valueFormat <*
+  (if isEnding
+     then endingLineEndFormat
+     else innerLineEndFormat)
+
+lineStartFormat :: Parsec String () ()
+lineStartFormat = optional lineSeparationFormat
+
+lineSeparationFormat :: Parsec String () ()
+lineSeparationFormat = many1 (oneOf " \t") $> ()
+
+innerLineEndFormat :: Parsec String () ()
+innerLineEndFormat = optional lineSeparationFormat *> endOfLine $> ()
+
+endingLineEndFormat :: Parsec String () ()
+endingLineEndFormat =
+  optional lineSeparationFormat *> optional endOfLine *> eof $> ()
