@@ -21,6 +21,7 @@ module Follow.DSL.Format
   , descriptionFormat
   , tagsFormat
   , multiWordFormat
+  , cswFormat
   , innerLineFormat
   , endingLineFormat
   ) where
@@ -79,11 +80,7 @@ tagsLineFormat = endingLineFormat "TAGS" tagsFormat
 
 -- | Format for the recipe tags
 tagsFormat :: Parsec String () [String]
-tagsFormat =
-  sepEndBy1
-    (unwords <$> sepEndBy1 (many1 alphaNum) (many1 $ oneOf " \t"))
-    (optional (many1 $ oneOf " \t") *> char ',' *>
-     optional (many1 $ oneOf " \t"))
+tagsFormat = cswFormat
 
 -- | Format for the expected reserved words in the DSL
 nameFormat :: String -> Parsec String () String
@@ -92,6 +89,14 @@ nameFormat = string
 -- | Format for a value consisting of multiple words
 multiWordFormat :: Parsec String () String
 multiWordFormat = unwords <$> sepEndBy1 (many1 alphaNum) (many1 $ oneOf " \t")
+
+-- | Format for a value consisting of a comma separated list of words
+cswFormat :: Parsec String () [String]
+cswFormat =
+  sepEndBy1
+    (unwords <$> sepEndBy1 (many1 alphaNum) (many1 $ oneOf " \t"))
+    (optional (many1 $ oneOf " \t") *> char ',' *>
+     optional (many1 $ oneOf " \t"))
 
 lineFormat :: Bool -> String -> Parsec String () a -> Parsec String () a
 lineFormat isEnding name valueFormat =
