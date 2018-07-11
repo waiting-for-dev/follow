@@ -20,12 +20,14 @@ module Follow.DSL.Format
   , titleFormat
   , descriptionFormat
   , tagsFormat
+  , wordFormat
   , multiWordFormat
   , cswFormat
   , innerLineFormat
   , endingLineFormat
   ) where
 
+import           Data.Char    (isPunctuation, isSymbol)
 import           Data.Functor (($>))
 import           Text.Parsec
 
@@ -88,7 +90,7 @@ nameFormat = string
 
 -- | Format for a value consisting of multiple words
 multiWordFormat :: Parsec String () String
-multiWordFormat = unwords <$> sepEndBy1 (many1 alphaNum) spaceFormat
+multiWordFormat = unwords <$> sepEndBy1 wordFormat spaceFormat
 
 -- | Format for a value consisting of a comma separated list of words
 cswFormat :: Parsec String () [String]
@@ -96,6 +98,10 @@ cswFormat =
   sepEndBy1
     (unwords <$> sepEndBy1 (many1 alphaNum) spaceFormat)
     (optional spaceFormat *> char ',' *> optional spaceFormat)
+
+-- | Format for what is considered a word
+wordFormat :: Parsec String () String
+wordFormat = many1 (alphaNum <|> satisfy isPunctuation <|> satisfy isSymbol)
 
 lineFormat :: Bool -> String -> Parsec String () a -> Parsec String () a
 lineFormat isEnding name valueFormat =

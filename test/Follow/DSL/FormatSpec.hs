@@ -39,6 +39,10 @@ spec = do
       let format = endingLineFormat "FOO" (string "bar")
       let success = parse format "test" input
       success `shouldSatisfy` isRight
+  describe ".wordFormat" $ do
+    it "allows digits, alphas, puntuation and symbols" $ do
+      let input = "1A,+"
+      parse wordFormat "test" input `shouldBe` Right "1A,+"
   describe ".multiWordFormat" $ do
     it "allows a single word" $ do
       let input = "foo"
