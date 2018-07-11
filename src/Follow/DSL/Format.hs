@@ -15,9 +15,11 @@ module Follow.DSL.Format
   , versionLineFormat
   , titleLineFormat
   , descriptionLineFormat
+  , tagsLineFormat
   , versionFormat
   , titleFormat
   , descriptionFormat
+  , tagsFormat
   , multiWordFormat
   , innerLineFormat
   , endingLineFormat
@@ -27,19 +29,20 @@ import           Data.Functor (($>))
 import           Text.Parsec
 
 -- | Format expected for the DSL String
-format :: Parsec String () (String, String, String)
+format :: Parsec String () (String, String, String, [String])
 format = do
   version <- versionLineFormat
   title <- titleLineFormat
   description <- descriptionLineFormat
-  return (version, title, description)
+  tags <- tagsLineFormat
+  return (version, title, description, tags)
 
 -- | Format for a line which is not the ending line
-innerLineFormat :: String -> Parsec String () String -> Parsec String () String
+innerLineFormat :: String -> Parsec String () a -> Parsec String () a
 innerLineFormat = lineFormat False
 
 -- | Format for the ending line
-endingLineFormat :: String -> Parsec String () String -> Parsec String () String
+endingLineFormat :: String -> Parsec String () a -> Parsec String () a
 endingLineFormat = lineFormat True
 
 -- | Format for the line containg the DSL version
@@ -64,11 +67,23 @@ titleFormat = multiWordFormat
 
 -- | Format for the line containing the recipe description
 descriptionLineFormat :: Parsec String () String
-descriptionLineFormat = endingLineFormat "DESCRIPTION" descriptionFormat
+descriptionLineFormat = innerLineFormat "DESCRIPTION" descriptionFormat
 
 -- | Format for the recipe description
 descriptionFormat :: Parsec String () String
 descriptionFormat = multiWordFormat
+
+-- | Format for the line containing the recipe tags
+tagsLineFormat :: Parsec String () [String]
+tagsLineFormat = endingLineFormat "TAGS" tagsFormat
+
+-- | Format for the recipe tags
+tagsFormat :: Parsec String () [String]
+tagsFormat =
+  sepEndBy1
+    (unwords <$> sepEndBy1 (many1 alphaNum) (many1 $ oneOf " \t"))
+    (optional (many1 $ oneOf " \t") *> char ',' *>
+     optional (many1 $ oneOf " \t"))
 
 -- | Format for the expected reserved words in the DSL
 nameFormat :: String -> Parsec String () String
@@ -78,8 +93,7 @@ nameFormat = string
 multiWordFormat :: Parsec String () String
 multiWordFormat = unwords <$> sepEndBy1 (many1 alphaNum) (many1 $ oneOf " \t")
 
-lineFormat ::
-     Bool -> String -> Parsec String () String -> Parsec String () String
+lineFormat :: Bool -> String -> Parsec String () a -> Parsec String () a
 lineFormat isEnding name valueFormat =
   lineStartFormat *> nameFormat name *> lineSeparationFormat *> valueFormat <*
   (if isEnding

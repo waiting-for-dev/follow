@@ -63,7 +63,7 @@ spec = do
       let input = "Some Title"
       parse titleFormat "test" input `shouldBe` Right "Some Title"
   describe ".descriptionLineFormat" $ do
-    it "expects ending line with DESCRIPTION name" $ do
+    it "expects inner line with DESCRIPTION name" $ do
       let input = "DESCRIPTION Some Description\n"
       parse descriptionLineFormat "test" input `shouldBe`
         Right "Some Description"
@@ -71,13 +71,32 @@ spec = do
     it "is multiWordFormat" $ do
       let input = "Some Description"
       parse descriptionFormat "test" input `shouldBe` Right "Some Description"
+  describe ".tagsLineFormat" $ do
+    it "expects ending line with TAGS name" $ do
+      let input = "TAGS a, b"
+      parse tagsLineFormat "test" input `shouldBe` Right ["a", "b"]
+  describe ".tagsFormat" $ do
+    it "expects a comma separated list of string" $ do
+      let input = "foo, bar"
+      parse tagsFormat "test" input `shouldBe` Right ["foo", "bar"]
+    it "accepts a single tag" $ do
+      let input = "foo"
+      parse tagsFormat "test" input `shouldBe` Right ["foo"]
+    it "removes leading and trailing spaces" $ do
+      let input = "foo,   \t  bar  \t  , zoo"
+      parse tagsFormat "test" input `shouldBe` Right ["foo", "bar", "zoo"]
+    it "collapses spaces between words to a single space" $ do
+      let input = "foo \t bar"
+      parse tagsFormat "test" input `shouldBe` Right ["foo bar"]
   describe ".format" $ do
     it "returns extracted values" $ do
       let input =
             "VERSION 1.0\n\
              \TITLE foo\n\
-             \DESCRIPTION description"
-      let Right (version, title, description) = parse format "test" input
+             \DESCRIPTION description\n\
+             \TAGS taga, tagb"
+      let Right (version, title, description, tags) = parse format "test" input
       version `shouldBe` "1.0"
       title `shouldBe` "foo"
       description `shouldBe` "description"
+      tags `shouldBe` ["taga", "tagb"]

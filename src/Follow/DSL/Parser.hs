@@ -23,6 +23,7 @@ data Recipe = Recipe
   { rVersion     :: String -- ^ Version of the DSL used.
   , rTitle       :: String -- ^ Title for the recipe; what is being followed.
   , rDescription :: String -- ^ A description for the recipe
+  , rTags        :: [String] -- ^ Tags that apply to the recipe
   } deriving (Show)
 
 -- | The result of a parsing: a `Recipe` or an error.
@@ -33,5 +34,5 @@ parseDSL :: String -> ParseResult
 parseDSL toParse =
   case parse format "(source)" toParse of
     Left error -> Left error
-    Right (version, title, description) ->
-      Right (Recipe version title description)
+    Right (version, title, description, tags) ->
+      Right (Recipe version title description tags)
