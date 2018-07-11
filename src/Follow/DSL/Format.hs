@@ -11,21 +11,21 @@ DESCRIPTION All the amazing articles from Joe Doe
 -}
 module Follow.DSL.Format
   ( format
+  , innerLineFormat
+  , endingLineFormat
   , nameFormat
   , versionLineFormat
-  , titleLineFormat
-  , descriptionLineFormat
-  , tagsLineFormat
   , versionFormat
+  , titleLineFormat
   , titleFormat
+  , descriptionLineFormat
   , descriptionFormat
+  , tagsLineFormat
   , tagsFormat
   , tagFormat
   , wordFormat
   , multiWordFormat
   , csFormat
-  , innerLineFormat
-  , endingLineFormat
   ) where
 
 import           Data.Char    (isPunctuation, isSymbol)

@@ -45,8 +45,8 @@ spec = do
       parse wordFormat "test" input `shouldBe` Right "1A,+"
   describe ".multiWordFormat" $ do
     it "allows a single word" $ do
-      let input = "foo"
-      parse multiWordFormat "test" input `shouldBe` Right "foo"
+      let input = "foo,+"
+      parse multiWordFormat "test" input `shouldBe` Right "foo,+"
     it "collapses spaces between words to a single one" $ do
       let input = "foo \t bar"
       parse multiWordFormat "test" input `shouldBe` Right "foo bar"
@@ -64,8 +64,8 @@ spec = do
       parse titleLineFormat "test" input `shouldBe` Right "Some Title"
   describe ".titleFormat" $ do
     it "is multiWordFormat" $ do
-      let input = "Some Title"
-      parse titleFormat "test" input `shouldBe` Right "Some Title"
+      let input = "Some, title!"
+      parse titleFormat "test" input `shouldBe` Right "Some, title!"
   describe ".descriptionLineFormat" $ do
     it "expects inner line with DESCRIPTION name" $ do
       let input = "DESCRIPTION Some Description\n"
@@ -73,8 +73,9 @@ spec = do
         Right "Some Description"
   describe ".descriptionFormat" $ do
     it "is multiWordFormat" $ do
-      let input = "Some Description"
-      parse descriptionFormat "test" input `shouldBe` Right "Some Description"
+      let input = "This is some great, great description!"
+      parse descriptionFormat "test" input `shouldBe`
+        Right "This is some great, great description!"
   describe ".tagsLineFormat" $ do
     it "expects ending line with TAGS name" $ do
       let input = "TAGS a, b"
@@ -85,8 +86,8 @@ spec = do
       parse tagFormat "test" input `shouldBe` Right "1A_-"
   describe ".tagsFormat" $ do
     it "is cswFormat" $ do
-      let input = "foo \t bar, zoo"
-      parse tagsFormat "test" input `shouldBe` Right ["foo bar", "zoo"]
+      let input = "foo \t bar, zoo_1"
+      parse tagsFormat "test" input `shouldBe` Right ["foo bar", "zoo_1"]
   describe ".csFormat" $ do
     let format = csFormat (many1 alphaNum)
     it "expects a comma separated list of items" $ do
@@ -107,9 +108,20 @@ spec = do
             "VERSION 1.0\n\
              \TITLE foo\n\
              \DESCRIPTION description\n\
-             \TAGS taga, tagb"
+             \TAGS tag_a, tag_b"
       let Right (version, title, description, tags) = parse format "test" input
       version `shouldBe` "1.0"
       title `shouldBe` "foo"
       description `shouldBe` "description"
-      tags `shouldBe` ["taga", "tagb"]
+      tags `shouldBe` ["tag_a", "tag_b"]
+      let hardInput =
+            "       VERSION \t 1.0  \t \n\
+             \  \t TITLE   Great, title!    \n\
+             \   DESCRIPTION    This is some great, great description!\n\
+             \TAGS   \t  tag_a, tag-b"
+      let Right (version, title, description, tags) =
+            parse format "test" hardInput
+      version `shouldBe` "1.0"
+      title `shouldBe` "Great, title!"
+      description `shouldBe` "This is some great, great description!"
+      tags `shouldBe` ["tag_a", "tag-b"]
