@@ -14,7 +14,7 @@ module Follow.DSL.Parser
   ) where
 
 import           Follow.DSL.Format (format)
-import           Text.Parsec
+import           Text.Parsec       (ParseError, parse)
 
 -- | Haskell representation of the information extracted from the
 -- DSL. It contains the information needed to fetch the content for a
