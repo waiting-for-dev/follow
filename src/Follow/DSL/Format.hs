@@ -88,32 +88,30 @@ nameFormat = string
 
 -- | Format for a value consisting of multiple words
 multiWordFormat :: Parsec String () String
-multiWordFormat = unwords <$> sepEndBy1 (many1 alphaNum) (many1 $ oneOf " \t")
+multiWordFormat = unwords <$> sepEndBy1 (many1 alphaNum) spaceFormat
 
 -- | Format for a value consisting of a comma separated list of words
 cswFormat :: Parsec String () [String]
 cswFormat =
   sepEndBy1
-    (unwords <$> sepEndBy1 (many1 alphaNum) (many1 $ oneOf " \t"))
-    (optional (many1 $ oneOf " \t") *> char ',' *>
-     optional (many1 $ oneOf " \t"))
+    (unwords <$> sepEndBy1 (many1 alphaNum) spaceFormat)
+    (optional spaceFormat *> char ',' *> optional spaceFormat)
 
 lineFormat :: Bool -> String -> Parsec String () a -> Parsec String () a
 lineFormat isEnding name valueFormat =
-  lineStartFormat *> nameFormat name *> lineSeparationFormat *> valueFormat <*
+  optionalSpaceFormat *> nameFormat name *> spaceFormat *> valueFormat <*
   (if isEnding
      then endingLineEndFormat
      else innerLineEndFormat)
 
-lineStartFormat :: Parsec String () ()
-lineStartFormat = optional lineSeparationFormat
+spaceFormat :: Parsec String () ()
+spaceFormat = many1 (oneOf " \t") $> ()
 
-lineSeparationFormat :: Parsec String () ()
-lineSeparationFormat = many1 (oneOf " \t") $> ()
+optionalSpaceFormat :: Parsec String () ()
+optionalSpaceFormat = optional spaceFormat
 
 innerLineEndFormat :: Parsec String () ()
-innerLineEndFormat = optional lineSeparationFormat *> endOfLine $> ()
+innerLineEndFormat = optionalSpaceFormat *> endOfLine $> ()
 
 endingLineEndFormat :: Parsec String () ()
-endingLineEndFormat =
-  optional lineSeparationFormat *> optional endOfLine *> eof $> ()
+endingLineEndFormat = optionalSpaceFormat *> optional endOfLine *> eof $> ()
