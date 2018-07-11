@@ -32,8 +32,10 @@ import           Data.Char    (isPunctuation, isSymbol)
 import           Data.Functor (($>))
 import           Text.Parsec
 
+type Parse = Parsec String ()
+
 -- | Format expected for the DSL String
-format :: Parsec String () (String, String, String, [String])
+format :: Parse (String, String, String, [String])
 format = do
   version <- versionLineFormat
   title <- titleLineFormat
@@ -42,19 +44,19 @@ format = do
   return (version, title, description, tags)
 
 -- | Format for a line which is not the ending line
-innerLineFormat :: String -> Parsec String () a -> Parsec String () a
+innerLineFormat :: String -> Parse a -> Parse a
 innerLineFormat = lineFormat False
 
 -- | Format for the ending line
-endingLineFormat :: String -> Parsec String () a -> Parsec String () a
+endingLineFormat :: String -> Parse a -> Parse a
 endingLineFormat = lineFormat True
 
 -- | Format for the line containg the DSL version
-versionLineFormat :: Parsec String () String
+versionLineFormat :: Parse String
 versionLineFormat = innerLineFormat "VERSION" versionFormat
 
 -- | Format for the version number used in the version line
-versionFormat :: Parsec String () String
+versionFormat :: Parse String
 versionFormat = do
   major <- many1 digit
   char '.'
@@ -62,67 +64,67 @@ versionFormat = do
   return $ major ++ "." ++ minor
 
 -- | Format for the line containing the recipe title
-titleLineFormat :: Parsec String () String
+titleLineFormat :: Parse String
 titleLineFormat = innerLineFormat "TITLE" titleFormat
 
 -- | Format for the recipe title
-titleFormat :: Parsec String () String
+titleFormat :: Parse String
 titleFormat = multiWordFormat
 
 -- | Format for the line containing the recipe description
-descriptionLineFormat :: Parsec String () String
+descriptionLineFormat :: Parse String
 descriptionLineFormat = innerLineFormat "DESCRIPTION" descriptionFormat
 
 -- | Format for the recipe description
-descriptionFormat :: Parsec String () String
+descriptionFormat :: Parse String
 descriptionFormat = multiWordFormat
 
 -- | Format for the line containing the recipe tags
-tagsLineFormat :: Parsec String () [String]
+tagsLineFormat :: Parse [String]
 tagsLineFormat = endingLineFormat "TAGS" tagsFormat
 
 -- | Format for the recipe tags
-tagsFormat :: Parsec String () [String]
+tagsFormat :: Parse [String]
 tagsFormat = csFormat tagFormat
 
 -- | Format for a tag
-tagFormat :: Parsec String () String
+tagFormat :: Parse String
 tagFormat = many1 (alphaNum <|> oneOf "_-")
 
 -- | Format for the expected reserved words in the DSL
-nameFormat :: String -> Parsec String () String
+nameFormat :: String -> Parse String
 nameFormat = string
 
 -- | Format for a value consisting of multiple words
-multiWordFormat :: Parsec String () String
+multiWordFormat :: Parse String
 multiWordFormat = unwords <$> sepEndBy1 wordFormat spaceFormat
 
 -- | Format for a value consisting of a comma separated list of words
-csFormat :: Parsec String () String -> Parsec String () [String]
+csFormat :: Parse String -> Parse [String]
 csFormat itemFormat =
   sepEndBy1
     (unwords <$> sepEndBy1 itemFormat spaceFormat)
     (optional spaceFormat *> char ',' *> optional spaceFormat)
 
 -- | Format for what is considered a word
-wordFormat :: Parsec String () String
+wordFormat :: Parse String
 wordFormat = many1 (alphaNum <|> satisfy isPunctuation <|> satisfy isSymbol)
 
-lineFormat :: Bool -> String -> Parsec String () a -> Parsec String () a
+lineFormat :: Bool -> String -> Parse a -> Parse a
 lineFormat isEnding name valueFormat =
   optionalSpaceFormat *> nameFormat name *> spaceFormat *> valueFormat <*
   (if isEnding
      then endingLineEndFormat
      else innerLineEndFormat)
 
-spaceFormat :: Parsec String () ()
+spaceFormat :: Parse ()
 spaceFormat = many1 (oneOf " \t") $> ()
 
-optionalSpaceFormat :: Parsec String () ()
+optionalSpaceFormat :: Parse ()
 optionalSpaceFormat = optional spaceFormat
 
-innerLineEndFormat :: Parsec String () ()
+innerLineEndFormat :: Parse ()
 innerLineEndFormat = optionalSpaceFormat *> endOfLine $> ()
 
-endingLineEndFormat :: Parsec String () ()
+endingLineEndFormat :: Parse ()
 endingLineEndFormat = optionalSpaceFormat *> optional endOfLine *> eof $> ()
