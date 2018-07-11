@@ -20,9 +20,10 @@ module Follow.DSL.Format
   , titleFormat
   , descriptionFormat
   , tagsFormat
+  , tagFormat
   , wordFormat
   , multiWordFormat
-  , cswFormat
+  , csFormat
   , innerLineFormat
   , endingLineFormat
   ) where
@@ -82,7 +83,11 @@ tagsLineFormat = endingLineFormat "TAGS" tagsFormat
 
 -- | Format for the recipe tags
 tagsFormat :: Parsec String () [String]
-tagsFormat = cswFormat
+tagsFormat = csFormat tagFormat
+
+-- | Format for a tag
+tagFormat :: Parsec String () String
+tagFormat = many1 (alphaNum <|> oneOf "_-")
 
 -- | Format for the expected reserved words in the DSL
 nameFormat :: String -> Parsec String () String
@@ -93,10 +98,10 @@ multiWordFormat :: Parsec String () String
 multiWordFormat = unwords <$> sepEndBy1 wordFormat spaceFormat
 
 -- | Format for a value consisting of a comma separated list of words
-cswFormat :: Parsec String () [String]
-cswFormat =
+csFormat :: Parsec String () String -> Parsec String () [String]
+csFormat itemFormat =
   sepEndBy1
-    (unwords <$> sepEndBy1 (many1 alphaNum) spaceFormat)
+    (unwords <$> sepEndBy1 itemFormat spaceFormat)
     (optional spaceFormat *> char ',' *> optional spaceFormat)
 
 -- | Format for what is considered a word

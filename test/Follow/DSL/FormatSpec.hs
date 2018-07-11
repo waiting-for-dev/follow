@@ -79,23 +79,28 @@ spec = do
     it "expects ending line with TAGS name" $ do
       let input = "TAGS a, b"
       parse tagsLineFormat "test" input `shouldBe` Right ["a", "b"]
-  describe ".cswFormat" $ do
-    it "expects a comma separated list of words" $ do
-      let input = "foo, bar"
-      parse cswFormat "test" input `shouldBe` Right ["foo", "bar"]
-    it "accepts a single word" $ do
-      let input = "foo"
-      parse cswFormat "test" input `shouldBe` Right ["foo"]
-    it "removes leading and trailing spaces" $ do
-      let input = "foo,   \t  bar  \t  , zoo"
-      parse cswFormat "test" input `shouldBe` Right ["foo", "bar", "zoo"]
-    it "collapses spaces between words to a single space" $ do
-      let input = "foo \t bar"
-      parse cswFormat "test" input `shouldBe` Right ["foo bar"]
+  describe ".tagFormat" $ do
+    it "allows digits, alphas, _ and -" $ do
+      let input = "1A_-"
+      parse tagFormat "test" input `shouldBe` Right "1A_-"
   describe ".tagsFormat" $ do
     it "is cswFormat" $ do
       let input = "foo \t bar, zoo"
       parse tagsFormat "test" input `shouldBe` Right ["foo bar", "zoo"]
+  describe ".csFormat" $ do
+    let format = csFormat (many1 alphaNum)
+    it "expects a comma separated list of items" $ do
+      let input = "foo, bar"
+      parse format "test" input `shouldBe` Right ["foo", "bar"]
+    it "accepts a single word" $ do
+      let input = "foo"
+      parse format "test" input `shouldBe` Right ["foo"]
+    it "removes leading and trailing spaces" $ do
+      let input = "foo,   \t  bar  \t  , zoo"
+      parse format "test" input `shouldBe` Right ["foo", "bar", "zoo"]
+    it "collapses spaces between words to a single space" $ do
+      let input = "foo \t bar"
+      parse format "test" input `shouldBe` Right ["foo bar"]
   describe ".format" $ do
     it "returns extracted values" $ do
       let input =
