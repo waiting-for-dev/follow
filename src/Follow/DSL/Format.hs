@@ -23,25 +23,29 @@ module Follow.DSL.Format
   , tagsLineFormat
   , tagsFormat
   , tagFormat
+  , strategyLineFormat
+  , strategyFormat
   , wordFormat
   , multiWordFormat
   , csFormat
   ) where
 
-import           Data.Char    (isPunctuation, isSymbol)
-import           Data.Functor (($>))
+import           Data.Char         (isPunctuation, isSymbol)
+import           Data.Functor      (($>))
+import qualified Follow.Strategies (validStrategies)
 import           Text.Parsec
 
 type Parse = Parsec String ()
 
 -- | Format expected for the DSL String
-format :: Parse (String, String, String, [String])
+format :: Parse (String, String, String, [String], String)
 format = do
   version <- versionLineFormat
   title <- titleLineFormat
   description <- descriptionLineFormat
   tags <- tagsLineFormat
-  return (version, title, description, tags)
+  strategy <- strategyLineFormat
+  return (version, title, description, tags, strategy)
 
 -- | Format for a line which is not the ending line
 innerLineFormat :: String -> Parse a -> Parse a
@@ -81,7 +85,7 @@ descriptionFormat = multiWordFormat
 
 -- | Format for the line containing the recipe tags
 tagsLineFormat :: Parse [String]
-tagsLineFormat = endingLineFormat "TAGS" tagsFormat
+tagsLineFormat = innerLineFormat "TAGS" tagsFormat
 
 -- | Format for the recipe tags
 tagsFormat :: Parse [String]
@@ -90,6 +94,16 @@ tagsFormat = csFormat tagFormat
 -- | Format for a tag
 tagFormat :: Parse String
 tagFormat = many1 (alphaNum <|> oneOf "_-")
+
+-- | Format for the recipe strategy
+strategyLineFormat :: Parse String
+strategyLineFormat = endingLineFormat "STRATEGY" strategyFormat
+
+-- | Format for the strategy that the recipe conforms; it must be one
+-- of the configured
+strategyFormat :: Parse String
+strategyFormat =
+  foldl1 (<|>) $ map (try . string) Follow.Strategies.validStrategies
 
 -- | Format for the expected reserved words in the DSL
 nameFormat :: String -> Parse String

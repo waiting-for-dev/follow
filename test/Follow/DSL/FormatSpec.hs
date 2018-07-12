@@ -77,8 +77,8 @@ spec = do
       parse descriptionFormat "test" input `shouldBe`
         Right "This is some great, great description!"
   describe ".tagsLineFormat" $ do
-    it "expects ending line with TAGS name" $ do
-      let input = "TAGS a, b"
+    it "expects inner line with TAGS name" $ do
+      let input = "TAGS a, b\n"
       parse tagsLineFormat "test" input `shouldBe` Right ["a", "b"]
   describe ".tagFormat" $ do
     it "allows digits, alphas, _ and -" $ do
@@ -102,26 +102,40 @@ spec = do
     it "collapses spaces between words to a single space" $ do
       let input = "foo \t bar"
       parse format "test" input `shouldBe` Right ["foo bar"]
+  describe ".strategyLineFormat" $ do
+    it "expects inner line with STRATEGY name" $ do
+      let input = "STRATEGY null"
+      parse strategyLineFormat "test" input `shouldBe` Right "null"
+  describe ".strategyFormat" $ do
+    it "allows one of the configured strategies" $ do
+      parse strategyFormat "test" "null" `shouldBe` Right "null"
+      let error = parse strategyFormat "test" "invalid"
+      error `shouldSatisfy` isLeft
   describe ".format" $ do
     it "returns extracted values" $ do
       let input =
             "VERSION 1.0\n\
              \TITLE foo\n\
              \DESCRIPTION description\n\
-             \TAGS tag_a, tag_b"
-      let Right (version, title, description, tags) = parse format "test" input
+             \TAGS tag_a, tag_b\n\
+             \STRATEGY null"
+      let Right (version, title, description, tags, strategy) =
+            parse format "test" input
       version `shouldBe` "1.0"
       title `shouldBe` "foo"
       description `shouldBe` "description"
       tags `shouldBe` ["tag_a", "tag_b"]
+      strategy `shouldBe` "null"
       let hardInput =
             "       VERSION \t 1.0  \t \n\
              \  \t TITLE   Great, title!    \n\
              \   DESCRIPTION    This is some great, great description!\n\
-             \TAGS   \t  tag_a, tag-b"
-      let Right (version, title, description, tags) =
+             \TAGS   \t  tag_a, tag-b\n\
+             \STRATEGY   \t  null \t  "
+      let Right (version, title, description, tags, strategy) =
             parse format "test" hardInput
       version `shouldBe` "1.0"
       title `shouldBe` "Great, title!"
       description `shouldBe` "This is some great, great description!"
       tags `shouldBe` ["tag_a", "tag-b"]
+      strategy `shouldBe` "null"

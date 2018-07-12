@@ -12,6 +12,7 @@ spec = do
             , "TITLE foo"
             , "DESCRIPTION description"
             , "TAGS taga, tagb"
+            , "STRATEGY null"
             ]
     let (Right recipe) = parseDSL success
     it "copies VERSION value as version" $ rVersion recipe `shouldBe` "1.0"
@@ -19,3 +20,4 @@ spec = do
     it "copies DESCRIPTION value as description" $
       rDescription recipe `shouldBe` "description"
     it "copies TAGS values as tags" $ rTags recipe `shouldBe` ["taga", "tagb"]
+    it "copies STRATEGT value as strategt" $ rStrategy recipe `shouldBe` "null"
