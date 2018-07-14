@@ -25,27 +25,31 @@ module Follow.DSL.Format
   , tagFormat
   , strategyLineFormat
   , strategyFormat
+  , argumentsFormat
   , wordFormat
   , multiWordFormat
   , csFormat
   ) where
 
-import           Data.Char         (isPunctuation, isSymbol)
-import           Data.Functor      (($>))
-import qualified Follow.Strategies (validStrategies)
+import           Data.Char              (isPunctuation, isSymbol)
+import           Data.Functor           (($>))
+import           Follow.Strategies      (Arguments, ArgumentsDSL,
+                                         validStrategies)
+import qualified Follow.Strategies.Null as Strategies.Null
 import           Text.Parsec
 
 type Parse = Parsec String ()
 
 -- | Format expected for the DSL String
-format :: Parse (String, String, String, [String], String)
+format :: Parse (String, String, String, [String], String, Arguments)
 format = do
   version <- versionLineFormat
   title <- titleLineFormat
   description <- descriptionLineFormat
   tags <- tagsLineFormat
   strategy <- strategyLineFormat
-  return (version, title, description, tags, strategy)
+  arguments <- argumentsFormat strategy
+  return (version, title, description, tags, strategy, arguments)
 
 -- | Format for a line which is not the ending line
 innerLineFormat :: String -> Parse a -> Parse a
@@ -102,8 +106,20 @@ strategyLineFormat = endingLineFormat "STRATEGY" strategyFormat
 -- | Format for the strategy that the recipe conforms; it must be one
 -- of the configured
 strategyFormat :: Parse String
-strategyFormat =
-  foldl1 (<|>) $ map (try . string) Follow.Strategies.validStrategies
+strategyFormat = foldl1 (<|>) $ map (try . string) validStrategies
+
+argumentsFormat :: String -> Parse Arguments
+argumentsFormat strategy =
+  case strategy of
+    "null" ->
+      let definition = Strategies.Null.argumentsDSL
+          steps =
+            foldl
+              (\acc (name, format) ->
+                 fmap ((,) name) (innerLineFormat name format) : acc)
+              []
+              definition
+       in sequence steps
 
 -- | Format for the expected reserved words in the DSL
 nameFormat :: String -> Parse String

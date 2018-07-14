@@ -111,6 +111,10 @@ spec = do
       parse strategyFormat "test" "null" `shouldBe` Right "null"
       let error = parse strategyFormat "test" "invalid"
       error `shouldSatisfy` isLeft
+  describe ".argumentsFormat" $ do
+    it "extracts from the null strategy" $ do
+      let result = parse (argumentsFormat "null") "test" ""
+      result `shouldBe` Right []
   describe ".format" $ do
     it "returns extracted values" $ do
       let input =
@@ -118,24 +122,26 @@ spec = do
              \TITLE foo\n\
              \DESCRIPTION description\n\
              \TAGS tag_a, tag_b\n\
-             \STRATEGY null"
-      let Right (version, title, description, tags, strategy) =
+             \STRATEGY null\n"
+      let Right (version, title, description, tags, strategy, arguments) =
             parse format "test" input
       version `shouldBe` "1.0"
       title `shouldBe` "foo"
       description `shouldBe` "description"
       tags `shouldBe` ["tag_a", "tag_b"]
       strategy `shouldBe` "null"
+      arguments `shouldBe` []
       let hardInput =
             "       VERSION \t 1.0  \t \n\
              \  \t TITLE   Great, title!    \n\
              \   DESCRIPTION    This is some great, great description!\n\
              \TAGS   \t  tag_a, tag-b\n\
-             \STRATEGY   \t  null \t  "
-      let Right (version, title, description, tags, strategy) =
+             \STRATEGY   \t  null \t\n"
+      let Right (version, title, description, tags, strategy, arguments) =
             parse format "test" hardInput
       version `shouldBe` "1.0"
       title `shouldBe` "Great, title!"
       description `shouldBe` "This is some great, great description!"
       tags `shouldBe` ["tag_a", "tag-b"]
       strategy `shouldBe` "null"
+      arguments `shouldBe` []
