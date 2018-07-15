@@ -108,18 +108,20 @@ strategyLineFormat = endingLineFormat "STRATEGY" strategyFormat
 strategyFormat :: Parse String
 strategyFormat = foldl1 (<|>) $ map (try . string) validStrategies
 
+-- | Format for the arguments to expect for given strategy. The
+-- definition of the expected name/value pair is extracted from a
+-- `ArgumentsDSL` data type in the strategy.
 argumentsFormat :: String -> Parse Arguments
 argumentsFormat strategy =
-  case strategy of
-    "null" ->
-      let definition = Strategies.Null.argumentsDSL
-          steps =
-            foldl
-              (\acc (name, format) ->
-                 fmap ((,) name) (innerLineFormat name format) : acc)
-              []
-              definition
-       in sequence steps
+  let definition =
+        case strategy of
+          "null" -> Strategies.Null.argumentsDSL
+   in sequence (toSteps definition)
+  where
+    toSteps =
+      foldl
+        (\acc (name, format) -> ((,) name <$> innerLineFormat name format) : acc)
+        []
 
 -- | Format for the expected reserved words in the DSL
 nameFormat :: String -> Parse String
