@@ -6,8 +6,7 @@ This module defines the common data types to be consumed by any
 concrete strategy, along with any other general function.
 -}
 module Follow.Strategies
-  ( validStrategies
-  , Arguments
+  ( Arguments
   , ArgumentsDSL
   , Value(..)
   ) where
@@ -29,7 +28,3 @@ type Arguments = [(Name, Value)]
 -- defines a mapping between argument names and its expected DSL for the
 -- value
 type ArgumentsDSL = [(Name, Parsec String () Value)]
-
--- | Strateges that are known by the system
-validStrategies :: [String]
-validStrategies = ["null"]

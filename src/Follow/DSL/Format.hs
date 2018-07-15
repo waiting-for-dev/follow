@@ -23,33 +23,28 @@ module Follow.DSL.Format
   , tagsLineFormat
   , tagsFormat
   , tagFormat
-  , strategyLineFormat
-  , strategyFormat
   , argumentsFormat
   , wordFormat
   , multiWordFormat
   , csFormat
   ) where
 
-import           Data.Char              (isPunctuation, isSymbol)
-import           Data.Functor           (($>))
-import           Follow.Strategies      (Arguments, ArgumentsDSL,
-                                         validStrategies)
-import qualified Follow.Strategies.Null as Strategies.Null
+import           Data.Char         (isPunctuation, isSymbol)
+import           Data.Functor      (($>))
+import           Follow.Strategies (Arguments, ArgumentsDSL)
 import           Text.Parsec
 
 type Parse = Parsec String ()
 
 -- | Format expected for the DSL String
-format :: Parse (String, String, String, [String], String, Arguments)
-format = do
+format :: ArgumentsDSL -> Parse (String, String, String, [String], Arguments)
+format argumentsDSL = do
   version <- versionLineFormat
   title <- titleLineFormat
   description <- descriptionLineFormat
   tags <- tagsLineFormat
-  strategy <- strategyLineFormat
-  arguments <- argumentsFormat strategy
-  return (version, title, description, tags, strategy, arguments)
+  arguments <- argumentsFormat argumentsDSL
+  return (version, title, description, tags, arguments)
 
 -- | Format for a line which is not the ending line
 innerLineFormat :: String -> Parse a -> Parse a
@@ -99,24 +94,9 @@ tagsFormat = csFormat tagFormat
 tagFormat :: Parse String
 tagFormat = many1 (alphaNum <|> oneOf "_-")
 
--- | Format for the recipe strategy
-strategyLineFormat :: Parse String
-strategyLineFormat = endingLineFormat "STRATEGY" strategyFormat
-
--- | Format for the strategy that the recipe conforms; it must be one
--- of the configured
-strategyFormat :: Parse String
-strategyFormat = foldl1 (<|>) $ map (try . string) validStrategies
-
--- | Format for the arguments to expect for given strategy. The
--- definition of the expected name/value pair is extracted from a
--- `ArgumentsDSL` data type in the strategy.
-argumentsFormat :: String -> Parse Arguments
-argumentsFormat strategy =
-  let definition =
-        case strategy of
-          "null" -> Strategies.Null.argumentsDSL
-   in sequence (toSteps definition)
+-- | Format for the arguments to expect for given dsl.
+argumentsFormat :: ArgumentsDSL -> Parse Arguments
+argumentsFormat dsl = sequence (toSteps dsl)
   where
     toSteps =
       foldl

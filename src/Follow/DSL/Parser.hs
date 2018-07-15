@@ -14,7 +14,7 @@ module Follow.DSL.Parser
   ) where
 
 import           Follow.DSL.Format (format)
-import qualified Follow.Strategies (Arguments)
+import           Follow.Strategies (Arguments, ArgumentsDSL)
 import           Text.Parsec       (ParseError, parse)
 
 -- | Haskell representation of the information extracted from the
@@ -25,17 +25,16 @@ data Recipe = Recipe
   , rTitle             :: String -- ^ Title for the recipe; what is being followed.
   , rDescription       :: String -- ^ A description for the recipe
   , rTags              :: [String] -- ^ Tags that apply to the recipe
-  , rStrategy          :: String -- ^ Strategy in use for the recipe
-  , rStrategyArguments :: Follow.Strategies.Arguments -- ^ Arguments to be given to the strategy
+  , rStrategyArguments :: Arguments -- ^ Arguments to be given to the strategy
   } deriving (Show)
 
 -- | The result of a parsing: a `Recipe` or an error.
 type ParseResult = Either ParseError Recipe
 
 -- | Parses DSL from a string to either a `Recipe` or an error.
-parseDSL :: String -> ParseResult
-parseDSL toParse =
-  case parse format "(source)" toParse of
+parseDSL :: String -> ArgumentsDSL -> ParseResult
+parseDSL toParse argumentsDSL =
+  case parse (format argumentsDSL) "(source)" toParse of
     Left error -> Left error
-    Right (version, title, description, tags, strategy, strategyArguments) ->
-      Right (Recipe version title description tags strategy strategyArguments)
+    Right (version, title, description, tags, strategyArguments) ->
+      Right (Recipe version title description tags strategyArguments)

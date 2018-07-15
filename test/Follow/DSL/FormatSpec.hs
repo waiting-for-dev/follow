@@ -1,7 +1,8 @@
 module Follow.DSL.FormatSpec where
 
-import           Data.Either       (isLeft, isRight)
+import           Data.Either            (isLeft, isRight)
 import           Follow.DSL.Format
+import           Follow.Strategies.Null as Null (argumentsDSL)
 import           Test.Hspec
 import           Text.Parsec
 
@@ -102,18 +103,9 @@ spec = do
     it "collapses spaces between words to a single space" $ do
       let input = "foo \t bar"
       parse format "test" input `shouldBe` Right ["foo bar"]
-  describe ".strategyLineFormat" $ do
-    it "expects inner line with STRATEGY name" $ do
-      let input = "STRATEGY null"
-      parse strategyLineFormat "test" input `shouldBe` Right "null"
-  describe ".strategyFormat" $ do
-    it "allows one of the configured strategies" $ do
-      parse strategyFormat "test" "null" `shouldBe` Right "null"
-      let error = parse strategyFormat "test" "invalid"
-      error `shouldSatisfy` isLeft
   describe ".argumentsFormat" $ do
-    it "extracts from the null strategy" $ do
-      let result = parse (argumentsFormat "null") "test" ""
+    it "extracts from given arguments DSL" $ do
+      let result = parse (argumentsFormat Null.argumentsDSL) "test" ""
       result `shouldBe` Right []
   describe ".format" $ do
     it "returns extracted values" $ do
@@ -121,27 +113,23 @@ spec = do
             "VERSION 1.0\n\
              \TITLE foo\n\
              \DESCRIPTION description\n\
-             \TAGS tag_a, tag_b\n\
-             \STRATEGY null\n"
-      let Right (version, title, description, tags, strategy, arguments) =
-            parse format "test" input
+             \TAGS tag_a, tag_b\n"
+      let Right (version, title, description, tags, arguments) =
+            parse (format Null.argumentsDSL) "test" input
       version `shouldBe` "1.0"
       title `shouldBe` "foo"
       description `shouldBe` "description"
       tags `shouldBe` ["tag_a", "tag_b"]
-      strategy `shouldBe` "null"
       arguments `shouldBe` []
       let hardInput =
             "       VERSION \t 1.0  \t \n\
              \  \t TITLE   Great, title!    \n\
              \   DESCRIPTION    This is some great, great description!\n\
-             \TAGS   \t  tag_a, tag-b\n\
-             \STRATEGY   \t  null \t\n"
-      let Right (version, title, description, tags, strategy, arguments) =
-            parse format "test" hardInput
+             \TAGS   \t  tag_a, tag-b\n"
+      let Right (version, title, description, tags, arguments) =
+            parse (format Null.argumentsDSL) "test" hardInput
       version `shouldBe` "1.0"
       title `shouldBe` "Great, title!"
       description `shouldBe` "This is some great, great description!"
       tags `shouldBe` ["tag_a", "tag-b"]
-      strategy `shouldBe` "null"
       arguments `shouldBe` []
