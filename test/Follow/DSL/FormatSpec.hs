@@ -41,7 +41,7 @@ spec = do
       let input = "foo \t bar"
       parse multiWordFormat "test" input `shouldBe` Right "foo bar"
   describe ".versionLineFormat" $ do
-    it "expects inner line with VERSION name" $ do
+    it "expects line with VERSION name" $ do
       let input = "VERSION 1.0\n"
       parse versionLineFormat "test" input `shouldBe` Right "1.0"
   describe ".versionFormat" $ do
@@ -49,7 +49,7 @@ spec = do
       let input = "1.2"
       parse versionFormat "test" input `shouldBe` Right "1.2"
   describe ".titleLineFormat" $ do
-    it "expects inner line with TITLE name" $ do
+    it "expects line with TITLE name" $ do
       let input = "TITLE Some Title\n"
       parse titleLineFormat "test" input `shouldBe` Right "Some Title"
   describe ".titleFormat" $ do
@@ -57,7 +57,7 @@ spec = do
       let input = "Some, title!"
       parse titleFormat "test" input `shouldBe` Right "Some, title!"
   describe ".descriptionLineFormat" $ do
-    it "expects inner line with DESCRIPTION name" $ do
+    it "expects line with DESCRIPTION name" $ do
       let input = "DESCRIPTION Some Description\n"
       parse descriptionLineFormat "test" input `shouldBe`
         Right "Some Description"
@@ -67,7 +67,7 @@ spec = do
       parse descriptionFormat "test" input `shouldBe`
         Right "This is some great, great description!"
   describe ".tagsLineFormat" $ do
-    it "expects inner line with TAGS name" $ do
+    it "expects line with TAGS name" $ do
       let input = "TAGS a, b\n"
       parse tagsLineFormat "test" input `shouldBe` Right ["a", "b"]
   describe ".tagFormat" $ do
