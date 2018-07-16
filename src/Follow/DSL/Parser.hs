@@ -13,7 +13,7 @@ module Follow.DSL.Parser
   , ParseResult
   ) where
 
-import           Follow.DSL.Format (format)
+import           Follow.DSL.Format (Description, Tags, Title, Version, format)
 import           Follow.Strategies (Arguments, ArgumentsDSL)
 import           Text.Parsec       (ParseError, parse)
 
@@ -21,10 +21,10 @@ import           Text.Parsec       (ParseError, parse)
 -- DSL. It contains the information needed to fetch the content for a
 -- followee.
 data Recipe = Recipe
-  { rVersion           :: String -- ^ Version of the DSL used.
-  , rTitle             :: String -- ^ Title for the recipe; what is being followed.
-  , rDescription       :: String -- ^ A description for the recipe
-  , rTags              :: [String] -- ^ Tags that apply to the recipe
+  { rVersion           :: Version -- ^ Version of the DSL used.
+  , rTitle             :: Title -- ^ Title for the recipe; what is being followed.
+  , rDescription       :: Description -- ^ A description for the recipe
+  , rTags              :: Tags -- ^ Tags that apply to the recipe
   , rStrategyArguments :: Arguments -- ^ Arguments to be given to the strategy
   } deriving (Show)
 
