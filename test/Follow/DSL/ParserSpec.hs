@@ -21,5 +21,3 @@ spec = do
     it "copies DESCRIPTION value as description" $
       rDescription recipe `shouldBe` "description"
     it "copies TAGS values as tags" $ rTags recipe `shouldBe` ["taga", "tagb"]
-    it "extract strategy arguments from its specification" $
-      rStrategyArguments recipe `shouldBe` []

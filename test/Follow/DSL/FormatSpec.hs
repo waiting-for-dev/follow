@@ -92,10 +92,6 @@ spec = do
     it "collapses spaces between words to a single space" $ do
       let input = "foo \t bar"
       parse format "test" input `shouldBe` Right ["foo bar"]
-  describe ".argumentsFormat" $ do
-    it "extracts from given arguments DSL" $ do
-      let result = parse (argumentsFormat Null.argumentsDSL) "test" ""
-      result `shouldBe` Right []
   describe ".format" $ do
     it "returns extracted values" $ do
       let input =
@@ -103,22 +99,20 @@ spec = do
              \TITLE foo\n\
              \DESCRIPTION description\n\
              \TAGS tag_a, tag_b\n"
-      let Right (version, title, description, tags, arguments) =
+      let Right (version, title, description, tags, _arguments) =
             parse (format Null.argumentsDSL) "test" input
       version `shouldBe` "1.0"
       title `shouldBe` "foo"
       description `shouldBe` "description"
       tags `shouldBe` ["tag_a", "tag_b"]
-      arguments `shouldBe` []
       let hardInput =
             "       VERSION \t 1.0  \t \n\
              \  \t TITLE   Great, title!    \n\
              \   DESCRIPTION    This is some great, great description!\n\
              \TAGS   \t  tag_a, tag-b"
-      let Right (version, title, description, tags, arguments) =
+      let Right (version, title, description, tags, _arguments) =
             parse (format Null.argumentsDSL) "test" hardInput
       version `shouldBe` "1.0"
       title `shouldBe` "Great, title!"
       description `shouldBe` "This is some great, great description!"
       tags `shouldBe` ["tag_a", "tag-b"]
-      arguments `shouldBe` []

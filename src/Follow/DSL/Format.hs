@@ -34,7 +34,7 @@ module Follow.DSL.Format
 
 import           Data.Char         (isPunctuation, isSymbol)
 import           Data.Functor      (($>))
-import           Follow.Strategies (Arguments, ArgumentsDSL, Value (..))
+import           Follow.Strategies (Arguments, ArgumentsDSL)
 import           Text.Parsec
 
 type Parse = Parsec String ()
