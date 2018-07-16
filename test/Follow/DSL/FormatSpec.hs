@@ -12,34 +12,23 @@ spec = do
     it "parses given string" $ do
       let input = "name"
       parse (nameFormat "name") "test" input `shouldBe` Right "name"
-  describe ".innerLineFormat" $ do
+  describe ".lineFormat" $ do
     it "defines a name/value pair and returns the value" $ do
       let input = "FOO bar\n"
-      let format = innerLineFormat "FOO" (string "bar")
+      let format = lineFormat "FOO" (string "bar")
       parse format "test" input `shouldBe` Right "bar"
     it "accepts leading spaces" $ do
       let input = " \t FOO bar\n"
-      let format = innerLineFormat "FOO" (string "bar")
+      let format = lineFormat "FOO" (string "bar")
       parse format "test" input `shouldBe` Right "bar"
     it "accepts spaces between name/value pairs" $ do
       let input = "FOO \t bar\n"
-      let format = innerLineFormat "FOO" (string "bar")
+      let format = lineFormat "FOO" (string "bar")
       parse format "test" input `shouldBe` Right "bar"
     it "accepts trailing spaces" $ do
       let input = "FOO bar \t \n"
-      let format = innerLineFormat "FOO" (string "bar")
+      let format = lineFormat "FOO" (string "bar")
       parse format "test" input `shouldBe` Right "bar"
-    it "requires a new-line char at the end" $ do
-      let input = "FOO bar"
-      let format = innerLineFormat "FOO" (string "bar")
-      let error = parse format "test" input
-      error `shouldSatisfy` isLeft
-  describe ".endingLineFormat" $ do
-    it "does not require a new-line char at the end" $ do
-      let input = "FOO bar"
-      let format = endingLineFormat "FOO" (string "bar")
-      let success = parse format "test" input
-      success `shouldSatisfy` isRight
   describe ".wordFormat" $ do
     it "allows digits, alphas, puntuation and symbols" $ do
       let input = "1A,+"
@@ -125,7 +114,7 @@ spec = do
             "       VERSION \t 1.0  \t \n\
              \  \t TITLE   Great, title!    \n\
              \   DESCRIPTION    This is some great, great description!\n\
-             \TAGS   \t  tag_a, tag-b\n"
+             \TAGS   \t  tag_a, tag-b"
       let Right (version, title, description, tags, arguments) =
             parse (format Null.argumentsDSL) "test" hardInput
       version `shouldBe` "1.0"

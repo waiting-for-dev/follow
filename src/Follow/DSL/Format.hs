@@ -11,8 +11,7 @@ DESCRIPTION All the amazing articles from Joe Doe
 -}
 module Follow.DSL.Format
   ( format
-  , innerLineFormat
-  , endingLineFormat
+  , lineFormat
   , nameFormat
   , versionLineFormat
   , versionFormat
@@ -31,7 +30,7 @@ module Follow.DSL.Format
 
 import           Data.Char         (isPunctuation, isSymbol)
 import           Data.Functor      (($>))
-import           Follow.Strategies (Arguments, ArgumentsDSL)
+import           Follow.Strategies (Arguments, ArgumentsDSL, Value (..))
 import           Text.Parsec
 
 type Parse = Parsec String ()
@@ -40,23 +39,26 @@ type Parse = Parsec String ()
 format :: ArgumentsDSL -> Parse (String, String, String, [String], Arguments)
 format argumentsDSL = do
   version <- versionLineFormat
+  endOfLine
   title <- titleLineFormat
+  endOfLine
   description <- descriptionLineFormat
+  endOfLine
   tags <- tagsLineFormat
+  -- next endOfLine is parsed in argumentsFormat
   arguments <- argumentsFormat argumentsDSL
+  optional endOfLine
   return (version, title, description, tags, arguments)
 
--- | Format for a line which is not the ending line
-innerLineFormat :: String -> Parse a -> Parse a
-innerLineFormat = lineFormat False
-
--- | Format for the ending line
-endingLineFormat :: String -> Parse a -> Parse a
-endingLineFormat = lineFormat True
+-- | Format for a line consisting of a name/value pair
+lineFormat :: String -> Parse a -> Parse a
+lineFormat name valueFormat =
+  optionalSpaceFormat *> nameFormat name *> spaceFormat *> valueFormat <*
+  optionalSpaceFormat
 
 -- | Format for the line containg the DSL version
 versionLineFormat :: Parse String
-versionLineFormat = innerLineFormat "VERSION" versionFormat
+versionLineFormat = lineFormat "VERSION" versionFormat
 
 -- | Format for the version number used in the version line
 versionFormat :: Parse String
@@ -68,7 +70,7 @@ versionFormat = do
 
 -- | Format for the line containing the recipe title
 titleLineFormat :: Parse String
-titleLineFormat = innerLineFormat "TITLE" titleFormat
+titleLineFormat = lineFormat "TITLE" titleFormat
 
 -- | Format for the recipe title
 titleFormat :: Parse String
@@ -76,7 +78,7 @@ titleFormat = multiWordFormat
 
 -- | Format for the line containing the recipe description
 descriptionLineFormat :: Parse String
-descriptionLineFormat = innerLineFormat "DESCRIPTION" descriptionFormat
+descriptionLineFormat = lineFormat "DESCRIPTION" descriptionFormat
 
 -- | Format for the recipe description
 descriptionFormat :: Parse String
@@ -84,7 +86,7 @@ descriptionFormat = multiWordFormat
 
 -- | Format for the line containing the recipe tags
 tagsLineFormat :: Parse [String]
-tagsLineFormat = innerLineFormat "TAGS" tagsFormat
+tagsLineFormat = lineFormat "TAGS" tagsFormat
 
 -- | Format for the recipe tags
 tagsFormat :: Parse [String]
@@ -100,7 +102,8 @@ argumentsFormat dsl = sequence (toSteps dsl)
   where
     toSteps =
       foldl
-        (\acc (name, format) -> ((,) name <$> innerLineFormat name format) : acc)
+        (\acc (name, format) ->
+           ((,) name <$> (endOfLine *> lineFormat name format)) : acc)
         []
 
 -- | Format for the expected reserved words in the DSL
@@ -122,21 +125,8 @@ csFormat itemFormat =
 wordFormat :: Parse String
 wordFormat = many1 (alphaNum <|> satisfy isPunctuation <|> satisfy isSymbol)
 
-lineFormat :: Bool -> String -> Parse a -> Parse a
-lineFormat isEnding name valueFormat =
-  optionalSpaceFormat *> nameFormat name *> spaceFormat *> valueFormat <*
-  (if isEnding
-     then endingLineEndFormat
-     else innerLineEndFormat)
-
 spaceFormat :: Parse ()
 spaceFormat = many1 (oneOf " \t") $> ()
 
 optionalSpaceFormat :: Parse ()
 optionalSpaceFormat = optional spaceFormat
-
-innerLineEndFormat :: Parse ()
-innerLineEndFormat = optionalSpaceFormat *> endOfLine $> ()
-
-endingLineEndFormat :: Parse ()
-endingLineEndFormat = optionalSpaceFormat *> optional endOfLine *> eof $> ()
