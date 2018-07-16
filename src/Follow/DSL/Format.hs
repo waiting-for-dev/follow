@@ -122,10 +122,8 @@ argumentsFormat :: ArgumentsDSL -> Parse Arguments
 argumentsFormat dsl = sequence (toSteps dsl)
   where
     toSteps =
-      foldl
-        (\acc (name, format) ->
-           ((,) name <$> (endOfLine *> lineFormat name format)) : acc)
-        []
+      map
+        (\(name, format) -> ((,) name <$> (endOfLine *> lineFormat name format)))
 
 -- | Format for the expected reserved words in the DSL
 nameFormat :: Name -> Parse Name

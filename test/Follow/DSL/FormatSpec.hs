@@ -1,6 +1,8 @@
 module Follow.DSL.FormatSpec where
 
+import           Data.Dynamic           (fromDynamic, toDyn)
 import           Data.Either            (isLeft, isRight)
+import           Data.Maybe             (fromJust)
 import           Follow.DSL.Format
 import           Follow.Strategies.Null as Null (argumentsDSL)
 import           Test.Hspec
@@ -78,6 +80,18 @@ spec = do
     it "is cswFormat" $ do
       let input = "foo \t bar, zoo_1"
       parse tagsFormat "test" input `shouldBe` Right ["foo bar", "zoo_1"]
+  describe ".argumentsFormat" $ do
+    it "extracts according given arguments DSL" $ do
+      let input = "\nARG1 VAL1\nARG2 VAL2"
+      let argumentsDSL =
+            [("ARG1", toDyn <$> wordFormat), ("ARG2", toDyn <$> wordFormat)]
+      let (Right parsed) = parse (argumentsFormat argumentsDSL) "test" input
+      let parsedConcrete =
+            map
+              (\(name, value) ->
+                 (name, fromJust (fromDynamic value :: Maybe String)))
+              parsed
+      parsedConcrete `shouldBe` [("ARG1", "VAL1"), ("ARG2", "VAL2")]
   describe ".csFormat" $ do
     let format = csFormat (many1 alphaNum)
     it "expects a comma separated list of items" $ do
@@ -99,7 +113,7 @@ spec = do
              \TITLE foo\n\
              \DESCRIPTION description\n\
              \TAGS tag_a, tag_b\n"
-      let Right (version, title, description, tags, _arguments) =
+      let Right (version, title, description, tags, arguments) =
             parse (format Null.argumentsDSL) "test" input
       version `shouldBe` "1.0"
       title `shouldBe` "foo"
