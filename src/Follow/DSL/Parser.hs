@@ -13,9 +13,10 @@ module Follow.DSL.Parser
   , ParseResult
   ) where
 
-import           Follow.DSL.Format (Description, Tags, Title, Version, format)
-import           Follow.Strategies (Arguments, ArgumentsDSL)
-import           Text.Parsec       (ParseError, parse)
+import           Follow.DSL.Format.Internal (Description, Tags, Title, Version,
+                                             format)
+import           Follow.Strategies          (Arguments, ArgumentsDSL)
+import           Text.Parsec                (ParseError, parse)
 
 -- | Haskell representation of the information extracted from the
 -- DSL. It contains the information needed to fetch the content for a
