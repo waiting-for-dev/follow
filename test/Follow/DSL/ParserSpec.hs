@@ -29,5 +29,5 @@ spec = do
       rDescription <$> recipe `shouldBe` Right "description"
       rTags <$> recipe `shouldBe` Right ["tag_a", "tag_b"]
       fmap (\(n, v) -> (n, fromDynamic v :: Maybe String)) <$>
-        (rStrategyArguments <$> recipe) `shouldBe`
+        (rArguments <$> recipe) `shouldBe`
         Right [("ARG1", Just "value_1"), ("ARG2", Just "value_2")]

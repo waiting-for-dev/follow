@@ -12,9 +12,9 @@ module Follow
 import           Follow.Strategies (Arguments)
 
 data Recipe = Recipe
-  { rVersion           :: String -- ^ Version of the DSL used.
-  , rTitle             :: String -- ^ Title for the recipe; what is being followed.
-  , rDescription       :: String -- ^ A description for the recipe
-  , rTags              :: [String] -- ^ Tags that apply to the recipe
-  , rStrategyArguments :: Arguments -- ^ Arguments to be given to the strategy
+  { rVersion     :: String -- ^ Version of the DSL used.
+  , rTitle       :: String -- ^ Title for the recipe; what is being followed.
+  , rDescription :: String -- ^ A description for the recipe
+  , rTags        :: [String] -- ^ Tags that apply to the recipe
+  , rArguments   :: Arguments -- ^ Arguments to be given to the strategy
   } deriving (Show)
