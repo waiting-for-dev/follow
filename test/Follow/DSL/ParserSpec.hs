@@ -1,6 +1,7 @@
 module Follow.DSL.ParserSpec where
 
 import           Data.Dynamic (fromDynamic, toDyn)
+import           Follow       (Recipe (..))
 import           Follow.DSL
 import           Test.Hspec
 import           Text.Parsec  (string)

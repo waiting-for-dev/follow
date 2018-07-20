@@ -15,10 +15,6 @@ module Follow.DSL.Format.Internal
   , argumentsFormat
   , lineFormat
   , format
-  , Version
-  , Title
-  , Description
-  , Tags
   ) where
 
 import           Data.Char         (toUpper)
