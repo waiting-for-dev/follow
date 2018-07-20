@@ -21,6 +21,8 @@ module Follow.DSL.Format.Internal
   , Tags
   ) where
 
+import           Data.Char         (toUpper)
+import           Data.Functor      (($>))
 import           Follow.DSL.Format
 import           Follow.Strategies (Arguments, ArgumentsDSL)
 import           Text.Parsec
@@ -67,13 +69,9 @@ lineFormat name valueFormat =
 versionLineFormat :: Parse Version
 versionLineFormat = lineFormat "VERSION" versionFormat
 
--- | Format for the version number used in the version line
+-- | Format for valid version numbers
 versionFormat :: Parse Version
-versionFormat = do
-  major <- many1 digit
-  char '.'
-  minor <- many1 digit
-  return $ major ++ "." ++ minor
+versionFormat = choice $ string <$> ["1.0"]
 
 -- | Format for the line containing the recipe title
 titleLineFormat :: Parse Title
@@ -101,7 +99,7 @@ tagsFormat = csFormat tagFormat
 
 -- | Format for a tag
 tagFormat :: Parse Tag
-tagFormat = many1 (alphaNum <|> oneOf "_-")
+tagFormat = unwords <$> sepBy1 (many1 (alphaNum <|> oneOf "_-")) spaceFormat
 
 -- | Format for the arguments to expect for given dsl.
 argumentsFormat :: ArgumentsDSL -> Parse Arguments
@@ -111,7 +109,8 @@ argumentsFormat dsl = sequence (toSteps dsl)
       map
         (\(name, format) -> ((,) name <$> (endOfLine *> lineFormat name format)))
 
--- | Format for the expected reserved words in the DSL
-nameFormat :: Name -> Parse Name
-nameFormat = string
--- | Format for a value consisting of multiple words
+-- | Format for the expected reserved words in the DSL. They must be
+-- an uppercase string, so if a downcase string is given as argument it will be
+-- converted beforehand.
+nameFormat :: Name -> Parse ()
+nameFormat name = string (toUpper <$> name) $> ()

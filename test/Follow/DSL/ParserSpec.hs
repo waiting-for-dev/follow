@@ -1,23 +1,32 @@
 module Follow.DSL.ParserSpec where
 
+import           Data.Dynamic (fromDynamic, toDyn)
 import           Follow.DSL
-import           Follow.Strategies.Null as Null (argumentsDSL)
 import           Test.Hspec
+import           Text.Parsec  (string)
 
 spec :: Spec
 spec = do
-  describe ".parseDSL" $ do
-    let success =
-          unlines
-            [ "VERSION 1.0"
-            , "TITLE foo"
-            , "DESCRIPTION description"
-            , "TAGS taga, tagb"
-            , "STRATEGY null"
+  describe ".parseDSL" $
+    it "parses DSL to a recipe" $ do
+      let input =
+            unlines
+              [ "VERSION 1.0"
+              , "TITLE title"
+              , "DESCRIPTION description"
+              , "TAGS tag_a, tag_b"
+              , "ARG1 value_1"
+              , "ARG2 value_2"
+              ]
+      let argumentsDSL =
+            [ ("ARG1", toDyn <$> string "value_1")
+            , ("ARG2", toDyn <$> string "value_2")
             ]
-    let (Right recipe) = parseDSL success Null.argumentsDSL
-    it "copies VERSION value as version" $ rVersion recipe `shouldBe` "1.0"
-    it "copies TITLE value as title" $ rTitle recipe `shouldBe` "foo"
-    it "copies DESCRIPTION value as description" $
-      rDescription recipe `shouldBe` "description"
-    it "copies TAGS values as tags" $ rTags recipe `shouldBe` ["taga", "tagb"]
+      let recipe = parseDSL input argumentsDSL
+      rVersion <$> recipe `shouldBe` Right "1.0"
+      rTitle <$> recipe `shouldBe` Right "title"
+      rDescription <$> recipe `shouldBe` Right "description"
+      rTags <$> recipe `shouldBe` Right ["tag_a", "tag_b"]
+      fmap (\(n, v) -> (n, fromDynamic v :: Maybe String)) <$>
+        (rStrategyArguments <$> recipe) `shouldBe`
+        Right [("ARG1", Just "value_1"), ("ARG2", Just "value_2")]

@@ -30,11 +30,9 @@ multiWordFormat :: Parse String
 multiWordFormat = unwords <$> sepEndBy1 wordFormat spaceFormat
 
 -- Format for a comma separated lists of items of given format.
-csFormat :: Parse String -> Parse [String]
+csFormat :: Parse a -> Parse [a]
 csFormat itemFormat =
-  sepEndBy1
-    (unwords <$> sepEndBy1 itemFormat spaceFormat)
-    (optionalSpaceFormat *> char ',' *> optionalSpaceFormat)
+  sepEndBy1 itemFormat (optionalSpaceFormat *> char ',' *> optionalSpaceFormat)
 
 -- Horizontal space format: one or more spaces or tabs.
 spaceFormat :: Parse ()
