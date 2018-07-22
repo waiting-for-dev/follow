@@ -48,3 +48,6 @@ tests:
     dependencies:
     - follow
     - hspec
+
+data-files:
+  - test/Fixtures/Recipe

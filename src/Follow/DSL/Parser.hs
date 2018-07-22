@@ -10,6 +10,7 @@ For details on the format of the DSL, check "Follow.DSL.Format" module.
 -}
 module Follow.DSL.Parser
   ( parseDSL
+  , parseDSLFile
   , ParseResult
   ) where
 
@@ -21,10 +22,18 @@ import           Text.Parsec                (ParseError, parse)
 -- | The result of a parsing: a `Follow.Recipe` or an error.
 type ParseResult = Either ParseError Recipe
 
--- | Parses DSL from a string to either a `Recipe` or an error.
+-- | Parses DSL from a string.
 parseDSL :: String -> ArgumentsDSL -> ParseResult
-parseDSL toParse argumentsDSL =
-  case parse (format argumentsDSL) "(source)" toParse of
+parseDSL = parse' "(source string)"
+
+-- | Parses DSL from a file.
+parseDSLFile :: FilePath -> ArgumentsDSL -> IO ParseResult
+parseDSLFile path argumentsDSL =
+  readFile path >>= \contents -> return $ parse' path contents argumentsDSL
+
+parse' :: String -> String -> ArgumentsDSL -> ParseResult
+parse' source toParse argumentsDSL =
+  case parse (format argumentsDSL) source toParse of
     Left error -> Left error
     Right (version, title, description, tags, strategyArguments) ->
       Right (Recipe version title description tags strategyArguments)
