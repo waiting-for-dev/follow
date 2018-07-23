@@ -1,5 +1,5 @@
 {-
-Description: Defines the base DSL from which an strategy can define extra items down below.
+Description: Defines the base DSL from which a fetcher strategy can define extra items down below.
 -}
 module Follow.DSL.Format.Internal
   ( nameFormat
@@ -20,7 +20,7 @@ module Follow.DSL.Format.Internal
 import           Data.Char         (toUpper)
 import           Data.Functor      (($>))
 import           Follow.DSL.Format
-import           Follow.Strategies (Arguments, ArgumentsDSL)
+import           Follow.Fetchers   (Arguments, ArgumentsDSL)
 import           Text.Parsec
 
 type Name = String

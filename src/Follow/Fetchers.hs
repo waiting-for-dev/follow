@@ -1,11 +1,11 @@
 {- |
-Description: Top namespace to define strategies to fetch recipes.
+Description: Top namespace to define fetcher strategies to fetch recipes.
 
 This module defines the common data types to be consumed by any
-concrete strategy, along with any other general function.
+concrete fetcher, along with any other general function.
 
 The DSL for a recipe must contain some common fields (see "Follow.DSL"
-for details). From there, an strategy can define new ones through an
+for details). From there, a fetcher can define new ones through an
 `ArgumentsDSL` data type. This data type is just a list of tuples
 /name-value/, where /name/ is the argument name, and /value/ is a
 format that the value is expected to obey (different formats ready to
@@ -19,7 +19,7 @@ Here it is an example. Say we have following definition:
 
 @
 import Follow.DSL
-import Follow.Strategies
+import Follow.Fetchers
 import Data.Dynamic
 
 argumentsDSL :: ArgumentsDSL
@@ -33,7 +33,7 @@ ARG1 value1
 ARG2 val1, val2
 @
 -}
-module Follow.Strategies
+module Follow.Fetchers
   ( Arguments
   , ArgumentsDSL
   ) where
@@ -46,7 +46,7 @@ type Name = String
 -- | List of arguments; pairs of name and value.
 type Arguments = [(Name, Dynamic)]
 
--- | Concrete strategies must define an ArgumentsDSL method that
+-- | Concrete fetchers must define an ArgumentsDSL method that
 -- defines a mapping between argument names and its expected DSL for the
 -- value
 type ArgumentsDSL = [(Name, Parsec String () Dynamic)]

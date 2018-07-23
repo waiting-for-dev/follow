@@ -1,6 +1,6 @@
 {- |
-Description: Defines formats to be used when compositing formats for
-             strategies argument values.
+Description: Defines formats to be used when composing formats for
+             fetcher argument values.
 -}
 module Follow.DSL.Format
   ( Parse

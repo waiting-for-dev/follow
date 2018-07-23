@@ -16,7 +16,7 @@ module Follow.DSL.Parser
 
 import           Follow                     (Recipe (..))
 import           Follow.DSL.Format.Internal (format)
-import           Follow.Strategies          (ArgumentsDSL)
+import           Follow.Fetchers            (ArgumentsDSL)
 import           Text.Parsec                (ParseError, parse)
 
 -- | The result of a parsing: a `Follow.Recipe` or an error.
@@ -35,5 +35,5 @@ parse' :: String -> String -> ArgumentsDSL -> ParseResult
 parse' source toParse argumentsDSL =
   case parse (format argumentsDSL) source toParse of
     Left error -> Left error
-    Right (version, title, description, tags, strategyArguments) ->
-      Right (Recipe version title description tags strategyArguments)
+    Right (version, title, description, tags, arguments) ->
+      Right (Recipe version title description tags arguments)
