@@ -96,3 +96,27 @@ spec = do
       let input = " "
       let result = parse' optionalSpaceFormat input
       result `shouldBe` Right ()
+  describe ".uriFormat" $ do
+    it "matches a valid URI" $ do
+      let inputOk = "http://anurl.com"
+      let inputKo = "error"
+      let ok = parse' uriFormat inputOk
+      let ko = parse' uriFormat inputKo
+      ok `shouldSatisfy` isRight
+      ko `shouldSatisfy` isLeft
+    it "does not match a relative URI" $ do
+      let input = "/anurl.com"
+      let result = parse' uriFormat input
+      result `shouldSatisfy` isLeft
+    it "does not match a URI with fragment identifier" $ do
+      let input = "http://anurl.com#here"
+      let result = parse' uriFormat input
+      result `shouldSatisfy` isLeft
+    it "allows a percent encoded URI" $ do
+      let input = "http://anurl%21.com"
+      let result = parse' uriFormat input
+      result `shouldSatisfy` isRight
+    it "returns matched URI as string" $ do
+      let input = "http://anurl.com"
+      let result = parse' uriFormat input
+      result `shouldBe` Right "http://anurl.com"

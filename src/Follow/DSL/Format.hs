@@ -9,10 +9,13 @@ module Follow.DSL.Format
   , csFormat
   , spaceFormat
   , optionalSpaceFormat
+  , uriFormat
   ) where
 
-import           Data.Char    (isPunctuation, isSymbol)
-import           Data.Functor (($>))
+import           Control.Monad (mfilter)
+import           Data.Char     (isPunctuation, isSymbol)
+import           Data.Functor  (($>))
+import           Network.URI   (isAbsoluteURI, isAllowedInURI)
 import           Text.Parsec
 
 -- Type alias for the common parsing format: from a string to whatever
@@ -33,6 +36,10 @@ multiWordFormat = unwords <$> sepEndBy1 wordFormat spaceFormat
 csFormat :: Parse a -> Parse [a]
 csFormat itemFormat =
   sepEndBy1 itemFormat (optionalSpaceFormat *> char ',' *> optionalSpaceFormat)
+
+-- Format for a URI
+uriFormat :: Parse String
+uriFormat = mfilter isAbsoluteURI (many1 $ satisfy isAllowedInURI)
 
 -- Horizontal space format: one or more spaces or tabs.
 spaceFormat :: Parse ()
