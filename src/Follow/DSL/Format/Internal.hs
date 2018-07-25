@@ -20,7 +20,7 @@ module Follow.DSL.Format.Internal
 import           Data.Char         (toUpper)
 import           Data.Functor      (($>))
 import           Follow.DSL.Format
-import           Follow.Fetchers   (Arguments, ArgumentsDSL)
+import           Follow.Types      (Arguments, ArgumentsDSL, Parse)
 import           Text.Parsec
 
 type Name = String

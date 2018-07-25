@@ -15,12 +15,9 @@ module Follow.DSL.Format
 import           Control.Monad (mfilter)
 import           Data.Char     (isPunctuation, isSymbol)
 import           Data.Functor  (($>))
+import           Follow.Types  (Parse)
 import           Network.URI   (isAbsoluteURI, isAllowedInURI)
 import           Text.Parsec
-
--- Type alias for the common parsing format: from a string to whatever
--- without any state.
-type Parse = Parsec String ()
 
 -- | Format for what is considered a word. It allows any combination
 -- of letters, digits, punctuations and symbols.

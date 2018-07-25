@@ -11,16 +11,12 @@ For details on the format of the DSL, check "Follow.DSL.Format" module.
 module Follow.DSL.Parser
   ( parseDSL
   , parseDSLFile
-  , ParseResult
   ) where
 
-import           Follow                     (Recipe (..))
 import           Follow.DSL.Format.Internal (format)
-import           Follow.Fetchers            (ArgumentsDSL)
+import           Follow.Types               (ArgumentsDSL, ParseResult,
+                                             Recipe (..))
 import           Text.Parsec                (ParseError, parse)
-
--- | The result of a parsing: a `Follow.Recipe` or an error.
-type ParseResult = Either ParseError Recipe
 
 -- | Parses DSL from a string.
 parseDSL :: String -> ArgumentsDSL -> ParseResult

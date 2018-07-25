@@ -2,8 +2,8 @@ module Follow.DSL.ParserSpec where
 
 import           Data.Dynamic (fromDynamic, toDyn)
 import           Data.Maybe   (fromJust)
-import           Follow       (Recipe (..))
 import           Follow.DSL
+import           Follow.Types (Recipe (..))
 import           Paths_follow (getDataFileName)
 import           Test.Hspec
 import           Text.Parsec  (string)

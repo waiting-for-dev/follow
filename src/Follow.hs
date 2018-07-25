@@ -1,20 +1,13 @@
 {- |
 Description: Top namespace for follow application.
-
-It contains the main data type for the application: a `Recipe`. A
-recipe is the haskell representation of the information for something
-to be followed.
 -}
 module Follow
-  ( Recipe(..)
+  ( fetchContent
   ) where
 
-import           Follow.Fetchers (Arguments)
+import           Follow.Types (Directory (..), Fetcher, Recipe)
 
-data Recipe = Recipe
-  { rVersion     :: String -- ^ Version of the DSL used.
-  , rTitle       :: String -- ^ Title for the recipe; what is being followed.
-  , rDescription :: String -- ^ A description for the recipe
-  , rTags        :: [String] -- ^ Tags that apply to the recipe
-  , rArguments   :: Arguments -- ^ Arguments to be given to the fetcher strategy
-  } deriving (Show)
+fetchContent :: Recipe -> Fetcher -> Directory
+fetchContent recipe fetcher =
+  let urls = fetcher recipe
+   in Directory recipe urls
