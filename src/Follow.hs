@@ -1,13 +1,10 @@
 {- |
 Description: Top namespace for follow application.
+
+Reexports main funtions to be performed at the application scope.
 -}
 module Follow
-  ( fetchContent
+  ( module Follow.Fetchers
   ) where
 
-import           Follow.Types (Directory (..), Fetcher, Recipe)
-
-fetchContent :: Recipe -> Fetcher -> Directory
-fetchContent recipe fetcher =
-  let urls = fetcher recipe
-   in Directory recipe urls
+import           Follow.Fetchers (fetch)

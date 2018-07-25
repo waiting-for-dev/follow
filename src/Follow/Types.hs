@@ -11,7 +11,7 @@ module Follow.Types
   , Recipe(..)
   , Directory(..)
   , URLS
-  , URL
+  , URL(..)
   ) where
 
 import           Data.Dynamic (Dynamic)
@@ -29,9 +29,9 @@ data Recipe = Recipe
 
 -- | Directory, a list of URLs about an author or subject being followed.
 data Directory = Directory
-  { cRecipe :: Recipe
-  , cURLS   :: URLS
-  }
+  { dRecipe :: Recipe
+  , dURLS   :: URLS
+  } deriving (Show)
 
 -- List of `URL`.
 type URLS = [URL]
@@ -43,7 +43,7 @@ data URL = URL
   , uTitle       :: Maybe String
   , uDescription :: Maybe String
   , uAuthor      :: Maybe String
-  }
+  } deriving (Eq, Show)
 
 -- Type alias for the common parsing format for the DSL: from a string
 -- to whatever without any state.
@@ -63,4 +63,4 @@ type Arguments = [(ArgumentName, Dynamic)]
 type ArgumentsDSL = [(ArgumentName, Parsec String () Dynamic)]
 
 -- | Function to fetch the URLs with content from the recipe
-type Fetcher = Recipe -> URLS
+type Fetcher = Recipe -> IO URLS
