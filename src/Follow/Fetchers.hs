@@ -7,4 +7,4 @@ import           Follow.Types (Directory (..), Fetcher, Recipe)
 
 fetch :: Recipe -> Fetcher -> IO Directory
 fetch recipe fetcher =
-  fetcher recipe >>= \urls -> return $ Directory recipe urls
+  fetcher recipe >>= \entries -> return $ Directory recipe entries

@@ -10,8 +10,8 @@ module Follow.Types
   , Fetcher
   , Recipe(..)
   , Directory(..)
-  , URLS
-  , URL(..)
+  , Entries
+  , Entry(..)
   ) where
 
 import           Data.Dynamic (Dynamic)
@@ -27,17 +27,17 @@ data Recipe = Recipe
   , rArguments   :: Arguments -- ^ Arguments to be given to the fetcher strategy
   } deriving (Show)
 
--- | Directory, a list of URLs about an author or subject being followed.
+-- | Directory, a list of Entries about an author or subject being followed.
 data Directory = Directory
-  { dRecipe :: Recipe
-  , dURLS   :: URLS
+  { dRecipe  :: Recipe
+  , dEntries :: Entries
   } deriving (Show)
 
--- List of `URL`.
-type URLS = [URL]
+-- List of `Entry`.
+type Entries = [Entry]
 
--- | URL pointing to some `Directory` item.
-data URL = URL
+-- | Entry for some URI pointing to some `Directory` item.
+data Entry = Entry
   { uURI         :: String
   , uGUID        :: String
   , uTitle       :: Maybe String
@@ -62,5 +62,5 @@ type Arguments = [(ArgumentName, Dynamic)]
 -- value.
 type ArgumentsDSL = [(ArgumentName, Parsec String () Dynamic)]
 
--- | Function to fetch the URLs with content from the recipe
-type Fetcher = Recipe -> IO URLS
+-- | Function to fetch the Entries with content from the recipe
+type Fetcher = Recipe -> IO Entries
