@@ -1,13 +1,10 @@
-{-# LANGUAGE FlexibleContexts #-}
-
 module Follow.DSL.FormatSpec where
 
 import           Data.Either       (isLeft, isRight)
 import           Follow.DSL.Format
+import           Helpers.Parsec
 import           Test.Hspec
 import           Text.Parsec
-
-parse' format input = parse format "test" input
 
 spec :: Spec
 spec = do

@@ -7,10 +7,9 @@ import           Data.Either                (isLeft, isRight)
 import           Data.Maybe                 (fromJust)
 import           Follow.DSL.Format
 import           Follow.DSL.Format.Internal
+import           Helpers.Parsec
 import           Test.Hspec
 import           Text.Parsec
-
-parse' format input = parse format "test" input
 
 spec :: Spec
 spec = do
