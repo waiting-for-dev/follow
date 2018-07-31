@@ -15,6 +15,7 @@ module Follow.Types
   ) where
 
 import           Data.Dynamic (Dynamic)
+import           Data.Text    (Text)
 import           Text.Parsec  (ParseError, Parsec)
 
 -- | A recipe is the haskell representation of the information needed
@@ -38,11 +39,11 @@ type Entries = [Entry]
 
 -- | Entry for some URI pointing to some `Directory` item.
 data Entry = Entry
-  { uURI         :: String
-  , uGUID        :: String
-  , uTitle       :: Maybe String
-  , uDescription :: Maybe String
-  , uAuthor      :: Maybe String
+  { eURI         :: Text
+  , eGUID        :: Text
+  , eTitle       :: Maybe Text
+  , eDescription :: Maybe Text
+  , eAuthor      :: Maybe Text
   } deriving (Eq, Show)
 
 -- Type alias for the common parsing format for the DSL: from a string
@@ -63,4 +64,4 @@ type Arguments = [(ArgumentName, Dynamic)]
 type ArgumentsDSL = [(ArgumentName, Parsec String () Dynamic)]
 
 -- | Function to fetch the Entries with content from the recipe
-type Fetcher = Recipe -> IO Entries
+type Fetcher = Recipe -> IO (Maybe Entries)

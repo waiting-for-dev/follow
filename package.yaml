@@ -23,6 +23,11 @@ dependencies:
 - base >= 4.7 && < 5
 - parsec
 - network-uri
+- bytestring
+- feed
+- text
+- http-client
+- req
 
 library:
   source-dirs: src

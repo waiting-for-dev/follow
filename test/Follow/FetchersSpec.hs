@@ -1,5 +1,8 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module Follow.FetchersSpec where
 
+import           Data.Maybe      (fromJust, isNothing)
 import           Follow.Fetchers
 import           Follow.Types    (Directory (..), Entries, Entry (..),
                                   Recipe (..))
@@ -17,12 +20,17 @@ spec = do
                 (Just "Description")
                 Nothing
             ]
-      let fetcher = \_recipe -> return entries :: IO Entries
+      let fetcher = \_recipe -> return $ Just entries :: IO (Maybe Entries)
       let recipe = Recipe "1.0" "Title" "Description" ["tag_a"] []
       let directory = fetch recipe fetcher
-      dEntries <$> directory `shouldReturn` entries
+      dEntries . fromJust <$> directory `shouldReturn` entries
     it "associates given recipe with the Directory" $ do
-      let fetcher = \_recipe -> return [] :: IO Entries
+      let fetcher = \_recipe -> return $ Just [] :: IO (Maybe Entries)
       let recipe = Recipe "1.0" "Title" "Description" ["tag_a"] []
       let directory = fetch recipe fetcher
-      rTitle <$> (dRecipe <$> directory) `shouldReturn` "Title"
+      rTitle <$> (dRecipe . fromJust <$> directory) `shouldReturn` "Title"
+    it "sets Directory as Nothing when there is no entries" $ do
+      let fetcher = \_recipe -> return Nothing :: IO (Maybe Entries)
+      let recipe = Recipe "1.0" "Title" "Description" ["tag_a"] []
+      let directory = fetch recipe fetcher
+      isNothing <$> directory `shouldReturn` True
