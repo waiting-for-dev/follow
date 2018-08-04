@@ -14,6 +14,6 @@ argumentsDSL = [("URL", toDyn <$> uriFormat)]
 fetcher :: Fetcher
 fetcher recipe =
   case getUrl recipe of
-    Nothing -> return Nothing
-    Just url ->
+    Left error -> return $ Left error
+    Right url ->
       fmap feedToEntries <$> (responseBodyToFeed <$> getResponseBody url)

@@ -64,4 +64,4 @@ type Arguments = [(ArgumentName, Dynamic)]
 type ArgumentsDSL = [(ArgumentName, Parsec String () Dynamic)]
 
 -- | Function to fetch the Entries with content from the recipe
-type Fetcher = Recipe -> IO (Maybe Entries)
+type Fetcher = Recipe -> IO (Either String Entries)

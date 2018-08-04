@@ -28,9 +28,15 @@ type Url s = (R.Url s, R.Option s)
 
 type EitherUrl = (Either (Url R.Http) (Url R.Https))
 
-getUrl :: Recipe -> Maybe EitherUrl
+getUrl :: Recipe -> Either String EitherUrl
 getUrl recipe =
-  (fromDynamic (dynamicUrl recipe) :: Maybe BS.ByteString) >>= R.parseUrl
+  case fromDynamic (dynamicUrl recipe) :: Maybe BS.ByteString of
+    Nothing ->
+      Left "It has not been possible to convert the URL back from Dynamic type"
+    Just value ->
+      case R.parseUrl value of
+        Nothing  -> Left "URL has not the right format"
+        Just url -> Right url
   where
     dynamicUrl :: Recipe -> Dynamic
     dynamicUrl recipe = snd . head $ rArguments recipe
@@ -42,8 +48,10 @@ getResponseBody = either fetch fetch
     fetch (url, option) =
       R.responseBody <$> R.req R.GET url R.NoReqBody R.lbsResponse option
 
-responseBodyToFeed :: BL.ByteString -> Maybe FT.Feed
-responseBodyToFeed = FI.parseFeedSource
+responseBodyToFeed :: BL.ByteString -> Either String FT.Feed
+responseBodyToFeed body =
+  maybe (Left "Feed source has not the right format") Right $
+  FI.parseFeedSource body
 
 feedToEntries :: FT.Feed -> [Entry]
 feedToEntries feed = itemToEntry <$> FQ.feedItems feed

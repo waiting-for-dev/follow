@@ -28,6 +28,7 @@ dependencies:
 - text
 - http-client
 - req
+- mtl
 
 library:
   source-dirs: src

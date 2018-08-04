@@ -5,9 +5,5 @@ module Follow.Fetchers where
 
 import           Follow.Types (Directory (..), Fetcher, Recipe)
 
-fetch :: Recipe -> Fetcher -> IO (Maybe Directory)
-fetch recipe fetcher = do
-  entries <- fetcher recipe
-  case entries of
-    Nothing -> return Nothing
-    Just xs -> return (Just $ Directory recipe xs)
+fetch :: Recipe -> Fetcher -> IO (Either String Directory)
+fetch recipe fetcher = fmap (Directory recipe) <$> fetcher recipe

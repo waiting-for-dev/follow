@@ -26,4 +26,4 @@ spec = do
       let entries = fetcher recipe
       let entry = fmap head <$> entries
       let url = fmap eURI <$> entry
-      fmap (isInfixOf "nytimes") <$> url `shouldReturn` Just True
+      fmap (isInfixOf "nytimes") <$> url `shouldReturn` Right True
