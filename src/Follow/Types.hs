@@ -48,8 +48,8 @@ type Entries = [Entry]
 
 -- | Entry for some URI pointing to some `Directory` item.
 data Entry = Entry
-  { eURI         :: Text
-  , eGUID        :: Text
+  { eURI         :: Maybe Text
+  , eGUID        :: Maybe Text
   , eTitle       :: Maybe Text
   , eDescription :: Maybe Text
   , eAuthor      :: Maybe Text

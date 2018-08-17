@@ -63,8 +63,8 @@ feedToEntries feed = itemToEntry <$> F.feedItems feed
     itemToEntry :: F.Item -> Entry
     itemToEntry item =
       Entry
-        (fromJust $ F.getItemLink item)
-        (snd . fromJust $ F.getItemId item)
+        (F.getItemLink item)
+        (snd <$> F.getItemId item)
         (F.getItemTitle item)
         (F.getItemDescription item)
         (F.getItemAuthor item)

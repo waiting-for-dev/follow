@@ -16,8 +16,8 @@ spec = do
     it "populates Directory Entries out of given fetcher" $ do
       let entries =
             [ Entry
-                "http://url.com"
-                "123"
+                (Just "http://url.com")
+                (Just "123")
                 (Just "Title")
                 (Just "Description")
                 Nothing

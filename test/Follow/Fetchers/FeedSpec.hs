@@ -6,6 +6,7 @@ import           Control.Monad.Except (runExceptT)
 import qualified Data.ByteString      as BS (ByteString)
 import           Data.Dynamic         (toDyn)
 import           Data.Either          (isRight)
+import           Data.Maybe           (fromJust)
 import           Data.Text            (isInfixOf)
 import           Follow.Fetchers.Feed
 import           Follow.Types         (Entry (..), Recipe (..), Result (..))
@@ -27,6 +28,6 @@ spec = do
               ]
       let entries = fetcher recipe
       let entry = fmap head entries
-      let url = fmap eURI entry
+      let url = fmap (fromJust . eURI) entry
       let isInfix = runExceptT (runResult $ fmap (isInfixOf "nytimes") url)
       isRight <$> isInfix `shouldReturn` True

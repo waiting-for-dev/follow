@@ -25,10 +25,10 @@ spec = do
         length entries `shouldBe` 2
       it "sets item link as entry uri" $ \feed -> do
         let entry = head $ feedToEntries feed
-        eURI entry `shouldBe` "http://www.example.com/blog/post/1"
+        eURI entry `shouldBe` Just "http://www.example.com/blog/post/1"
       it "sets item guid as entry id" $ \feed -> do
         let entry = head $ feedToEntries feed
-        eGUID entry `shouldBe` "7bd204c6-1655-4c27-aeee-53f933c5395f"
+        eGUID entry `shouldBe` Just "7bd204c6-1655-4c27-aeee-53f933c5395f"
       it "sets item title as entry title" $ \feed -> do
         let entry = head $ feedToEntries feed
         eTitle entry `shouldBe` Just "Example entry"
