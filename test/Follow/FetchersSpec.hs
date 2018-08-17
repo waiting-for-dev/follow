@@ -5,7 +5,7 @@ module Follow.FetchersSpec where
 import           Control.Monad.Except (runExceptT, throwError)
 import           Data.Either          (fromRight, isLeft)
 import           Follow.Fetchers
-import           Follow.Types         (Directory (..), Entries, Entry (..),
+import           Follow.Types         (Directory (..), Entry (..),
                                        FetchError (..), FetchFeedError (..),
                                        Fetcher, Recipe (..), Result (..))
 import           Test.Hspec
