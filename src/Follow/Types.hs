@@ -30,10 +30,10 @@ import           Text.Parsec            (ParseError, Parsec)
 -- | A recipe is the haskell representation of the information needed
 -- to follow some author or subject on the Internet.
 data Recipe = Recipe
-  { rVersion     :: String -- ^ Version of the DSL used.
-  , rTitle       :: String -- ^ Title for the recipe; what is being followed.
-  , rDescription :: String -- ^ A description for the recipe
-  , rTags        :: [String] -- ^ Tags that apply to the recipe
+  { rVersion     :: Text -- ^ Version of the DSL used.
+  , rTitle       :: Text -- ^ Title for the recipe; what is being followed.
+  , rDescription :: Text -- ^ A description for the recipe
+  , rTags        :: [Text] -- ^ Tags that apply to the recipe
   , rArguments   :: Arguments -- ^ Arguments to be given to the fetcher strategy
   } deriving (Show)
 
@@ -70,7 +70,7 @@ type Arguments = [(ArgumentName, Dynamic)]
 -- | Concrete fetchers must define an ArgumentsDSL method that
 -- defines a mapping between argument names and its expected DSL for the
 -- value.
-type ArgumentsDSL = [(ArgumentName, Parsec String () Dynamic)]
+type ArgumentsDSL = [(ArgumentName, Parse Dynamic)]
 
 -- | A final result, which has been obtained reaching the outside
 -- world and contains either what is expected or a fetch error.

@@ -1,3 +1,5 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module Follow.DSL.ParserSpec where
 
 import           Data.Dynamic (fromDynamic, toDyn)

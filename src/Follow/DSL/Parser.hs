@@ -13,6 +13,7 @@ module Follow.DSL.Parser
   , parseDSLFile
   ) where
 
+import           Data.Text                  (pack)
 import           Follow.DSL.Format.Internal (format)
 import           Follow.Types               (ArgumentsDSL, ParseResult,
                                              Recipe (..))
@@ -32,4 +33,10 @@ parse' source toParse argumentsDSL =
   case parse (format argumentsDSL) source toParse of
     Left error -> Left error
     Right (version, title, description, tags, arguments) ->
-      Right (Recipe version title description tags arguments)
+      Right
+        (Recipe
+           (pack version)
+           (pack title)
+           (pack description)
+           (pack <$> tags)
+           arguments)
