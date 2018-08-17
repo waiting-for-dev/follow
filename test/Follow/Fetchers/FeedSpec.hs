@@ -2,11 +2,13 @@
 
 module Follow.Fetchers.FeedSpec where
 
+import           Control.Monad.Except (runExceptT)
 import qualified Data.ByteString      as BS (ByteString)
 import           Data.Dynamic         (toDyn)
+import           Data.Either          (isRight)
 import           Data.Text            (isInfixOf)
 import           Follow.Fetchers.Feed
-import           Follow.Types         (Entry (..), Recipe (..))
+import           Follow.Types         (Entry (..), Recipe (..), Result (..))
 import           Test.Hspec
 
 spec :: Spec
@@ -24,6 +26,7 @@ spec = do
                     ("http://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml" :: BS.ByteString))
               ]
       let entries = fetcher recipe
-      let entry = fmap head <$> entries
-      let url = fmap eURI <$> entry
-      fmap (isInfixOf "nytimes") <$> url `shouldReturn` Right True
+      let entry = fmap head entries
+      let url = fmap eURI entry
+      let isInfix = runExceptT (runResult $ fmap (isInfixOf "nytimes") url)
+      isRight <$> isInfix `shouldReturn` True

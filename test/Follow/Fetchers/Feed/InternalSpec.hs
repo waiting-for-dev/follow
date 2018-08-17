@@ -4,11 +4,11 @@ module Follow.Fetchers.Feed.InternalSpec where
 
 import qualified Data.ByteString               as BS (ByteString)
 import           Data.Dynamic                  (toDyn)
+import           Data.Either                   (isRight)
 import           Data.Maybe                    (fromJust, isNothing)
 import           Follow.Fetchers.Feed.Internal
 import           Follow.Types                  (Entry (..), Recipe (..))
-import qualified Network.HTTP.Req              as R (parseUrlHttp,
-                                                     parseUrlHttps)
+import qualified Network.HTTP.Req              as R (parseUrl)
 import           Test.Hspec
 import qualified Text.Feed.Import              as FI (parseFeedFromFile)
 import qualified Text.Feed.Types               as FT (Feed)

@@ -2,10 +2,12 @@
 
 module Follow.FetchersSpec where
 
-import           Data.Either     (isLeft)
+import           Control.Monad.Except (runExceptT, throwError)
+import           Data.Either          (fromRight, isLeft)
 import           Follow.Fetchers
-import           Follow.Types    (Directory (..), Entries, Entry (..), Fetcher,
-                                  Recipe (..))
+import           Follow.Types         (Directory (..), Entries, Entry (..),
+                                       FetchError (..), FetchFeedError (..),
+                                       Fetcher, Recipe (..), Result (..))
 import           Test.Hspec
 
 spec :: Spec
@@ -20,17 +22,21 @@ spec = do
                 (Just "Description")
                 Nothing
             ]
-      let fetcher = (\_recipe -> return $ Right entries) :: Fetcher
+      let fetcher = (\_recipe -> return entries) :: Fetcher
       let recipe = Recipe "1.0" "Title" "Description" ["tag_a"] []
       let directory = fetch recipe fetcher
-      fmap dEntries <$> directory `shouldReturn` Right entries
+      let fetchedEntries = runExceptT (runResult $ fmap dEntries directory)
+      fromRight [] <$> fetchedEntries `shouldReturn` entries
     it "associates given recipe with the Directory" $ do
-      let fetcher = (\_recipe -> return $ Right []) :: Fetcher
+      let fetcher = (\_recipe -> return []) :: Fetcher
       let recipe = Recipe "1.0" "Title" "Description" ["tag_a"] []
       let directory = fetch recipe fetcher
-      fmap rTitle <$> (fmap dRecipe <$> directory) `shouldReturn` Right "Title"
+      let fetchedTitle =
+            runExceptT (runResult $ fmap rTitle (fmap dRecipe directory))
+      fromRight "" <$> fetchedTitle `shouldReturn` "Title"
     it "returns back any error from the fetcher" $ do
-      let fetcher = (\_recipe -> return $ Left "Error") :: Fetcher
+      let fetcher =
+            (\_recipe -> throwError $ FetchFeedError URLWrongFormat) :: Fetcher
       let recipe = Recipe "1.0" "Title" "Description" ["tag_a"] []
-      let directory = fetch recipe fetcher
+      let directory = runExceptT (runResult $ fetch recipe fetcher)
       isLeft <$> directory `shouldReturn` True

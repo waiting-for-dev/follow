@@ -1,69 +1,74 @@
 {-# LANGUAGE DataKinds #-}
 
 module Follow.Fetchers.Feed.Internal
-  ( getUrl
+  ( urlFromRecipe
   , feedToEntries
   , getResponseBody
-  , responseBodyToFeed
+  , parseFeed
   ) where
 
-import           Control.Applicative  ((<|>))
-import           Control.Exception    (throwIO)
+import           Control.Monad.Except (throwError)
 import qualified Data.ByteString      as BS (ByteString)
-import qualified Data.ByteString.Lazy as BL (ByteString, toStrict)
+import qualified Data.ByteString.Lazy as BL (ByteString)
 import           Data.Dynamic         (Dynamic, fromDynamic)
 import           Data.Maybe           (fromJust)
-import           Follow.Types         (Entry (..), Recipe (..))
-import qualified Network.HTTP.Req     as R (GET (..), MonadHttp, NoReqBody (..),
-                                            Option, Scheme (..), Url,
-                                            handleHttpException, lbsResponse,
-                                            parseUrl, req, responseBody)
-import           Text.Feed.Import     as FI (parseFeedSource)
-import           Text.Feed.Query      as FQ (feedItems, getItemAuthor,
-                                             getItemDescription, getItemId,
-                                             getItemLink, getItemTitle)
-import           Text.Feed.Types      as FT (Feed, Item)
+import           Follow.Types         (Entry (..), FetchError (..),
+                                       FetchFeedError (..), Recipe (..),
+                                       Result (..))
+import qualified Network.HTTP.Req     as R (GET (..), HttpException, MonadHttp,
+                                            NoReqBody (..), Option, Scheme (..),
+                                            Url, handleHttpException,
+                                            lbsResponse, parseUrl, req,
+                                            responseBody)
+import           Text.Feed.Import     as F (parseFeedSource)
+import           Text.Feed.Query      as F (feedItems, getItemAuthor,
+                                            getItemDescription, getItemId,
+                                            getItemLink, getItemTitle)
+import           Text.Feed.Types      as F (Feed, Item)
 
 type Url s = (R.Url s, R.Option s)
 
 type EitherUrl = (Either (Url R.Http) (Url R.Https))
 
-getUrl :: Recipe -> Either String EitherUrl
-getUrl recipe =
+-- | Extract the URL from the arguments of a recipe
+urlFromRecipe :: Recipe -> Either FetchError EitherUrl
+urlFromRecipe recipe =
   case fromDynamic (dynamicUrl recipe) :: Maybe BS.ByteString of
-    Nothing ->
-      Left "It has not been possible to convert the URL back from Dynamic type"
+    Nothing -> Left $ FetchFeedError URLFromDynamicConversionFailure
     Just value ->
       case R.parseUrl value of
-        Nothing  -> Left "URL has not the right format"
+        Nothing  -> Left $ FetchFeedError URLWrongFormat
         Just url -> Right url
   where
     dynamicUrl :: Recipe -> Dynamic
     dynamicUrl recipe = snd . head $ rArguments recipe
 
-getResponseBody :: EitherUrl -> IO BL.ByteString
+-- | Performs a request to given url and returns just the response body
+getResponseBody :: EitherUrl -> Result BL.ByteString
 getResponseBody = either fetch fetch
   where
-    fetch :: Url s -> IO BL.ByteString
+    fetch :: Url s -> Result BL.ByteString
     fetch (url, option) =
       R.responseBody <$> R.req R.GET url R.NoReqBody R.lbsResponse option
 
-responseBodyToFeed :: BL.ByteString -> Either String FT.Feed
-responseBodyToFeed body =
-  maybe (Left "Feed source has not the right format") Right $
-  FI.parseFeedSource body
+-- | Parses a feed
+parseFeed :: BL.ByteString -> Either FetchError F.Feed
+parseFeed body =
+  maybe (Left $ FetchFeedError FeedWrongFormat) Right $ F.parseFeedSource body
 
-feedToEntries :: FT.Feed -> [Entry]
-feedToEntries feed = itemToEntry <$> FQ.feedItems feed
+-- | Transforms a feed to a list of `Follow.Types.Entry`
+feedToEntries :: F.Feed -> [Entry]
+feedToEntries feed = itemToEntry <$> F.feedItems feed
   where
-    itemToEntry :: FT.Item -> Entry
+    itemToEntry :: F.Item -> Entry
     itemToEntry item =
       Entry
-        (fromJust $ FQ.getItemLink item)
-        (snd . fromJust $ FQ.getItemId item)
-        (FQ.getItemTitle item)
-        (FQ.getItemDescription item)
-        (FQ.getItemAuthor item)
+        (fromJust $ F.getItemLink item)
+        (snd . fromJust $ F.getItemId item)
+        (F.getItemTitle item)
+        (F.getItemDescription item)
+        (F.getItemAuthor item)
 
-instance R.MonadHttp IO where
-  handleHttpException = throwIO
+-- | Declares how to handle request errors
+instance R.MonadHttp Result where
+  handleHttpException e = throwError $ FetchFeedError (ResponseError e)
