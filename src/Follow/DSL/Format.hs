@@ -12,11 +12,13 @@ module Follow.DSL.Format
   , uriFormat
   ) where
 
-import           Control.Monad (mfilter)
-import           Data.Char     (isPunctuation, isSymbol)
-import           Data.Functor  (($>))
-import           Follow.Types  (Parse)
-import           Network.URI   (isAbsoluteURI, isAllowedInURI)
+import           Control.Monad         (mfilter)
+import qualified Data.ByteString       as BS (ByteString)
+import qualified Data.ByteString.Char8 as BC (pack)
+import           Data.Char             (isPunctuation, isSymbol)
+import           Data.Functor          (($>))
+import           Follow.Types          (Parse)
+import           Network.URI           (isAbsoluteURI, isAllowedInURI)
 import           Text.Parsec
 
 -- | Format for what is considered a word. It allows any combination
@@ -35,8 +37,8 @@ csFormat itemFormat =
   sepEndBy1 itemFormat (optionalSpaceFormat *> char ',' *> optionalSpaceFormat)
 
 -- Format for a URI
-uriFormat :: Parse String
-uriFormat = mfilter isAbsoluteURI (many1 $ satisfy isAllowedInURI)
+uriFormat :: Parse BS.ByteString
+uriFormat = BC.pack <$> mfilter isAbsoluteURI (many1 $ satisfy isAllowedInURI)
 
 -- Horizontal space format: one or more spaces or tabs.
 spaceFormat :: Parse ()

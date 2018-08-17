@@ -1,3 +1,5 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module Follow.DSL.FormatSpec where
 
 import           Data.Either       (isLeft, isRight)
