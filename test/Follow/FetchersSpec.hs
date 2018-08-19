@@ -13,6 +13,7 @@ import           Test.Hspec
 spec :: Spec
 spec = do
   describe ".fetch" $ do
+    let recipe = Recipe "1.0" "Title" "Description" ["tag"] []
     it "populates Directory Entries out of given fetcher" $ do
       let entries =
             [ Entry
@@ -23,20 +24,17 @@ spec = do
                 Nothing
             ]
       let fetcher = (\_recipe -> return entries) :: Fetcher
-      let recipe = Recipe "1.0" "Title" "Description" ["tag_a"] []
       let directory = fetch recipe fetcher
-      let fetchedEntries = runExceptT (runResult $ fmap dEntries directory)
-      fromRight [] <$> fetchedEntries `shouldReturn` entries
+      fetchedEntries <- runExceptT (runResult $ fmap dEntries directory)
+      fromRight [] fetchedEntries `shouldBe` entries
     it "associates given recipe with the Directory" $ do
       let fetcher = (\_recipe -> return []) :: Fetcher
-      let recipe = Recipe "1.0" "Title" "Description" ["tag_a"] []
       let directory = fetch recipe fetcher
-      let fetchedTitle =
-            runExceptT (runResult $ fmap rTitle (fmap dRecipe directory))
-      fromRight "" <$> fetchedTitle `shouldReturn` "Title"
+      fetchedTitle <-
+        runExceptT (runResult $ fmap rTitle (fmap dRecipe directory))
+      fromRight "" fetchedTitle `shouldBe` "Title"
     it "returns back any error from the fetcher" $ do
       let fetcher =
             (\_recipe -> throwError $ FetchFeedError URLWrongFormat) :: Fetcher
-      let recipe = Recipe "1.0" "Title" "Description" ["tag_a"] []
-      let directory = runExceptT (runResult $ fetch recipe fetcher)
-      isLeft <$> directory `shouldReturn` True
+      result <- runExceptT (runResult $ fetch recipe fetcher)
+      show result `shouldBe` "Left (FetchFeedError URLWrongFormat)"
