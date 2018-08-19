@@ -17,6 +17,7 @@ module Follow.Types
   , FetchError(..)
   , FetchFeedError(..)
   , Result(..)
+  , Digester(..)
   ) where
 
 import           Control.Monad.Except   (ExceptT, MonadError, catchError,
@@ -93,3 +94,7 @@ data FetchFeedError
   | FeedWrongFormat
   | ResponseError R.HttpException
   deriving (Show)
+
+-- | Digesters are strategies to transform a directory into something
+-- to be consumed by a user
+type Digester a = Directory -> a
