@@ -5,5 +5,5 @@ module Follow.Fetchers where
 
 import           Follow.Types (Directory (..), Fetcher, Recipe, Result)
 
-fetch :: Recipe -> Fetcher -> Result Directory
-fetch recipe fetcher = Directory recipe <$> fetcher recipe
+fetch :: Fetcher -> Recipe -> Result Directory
+fetch fetcher recipe = Directory recipe <$> fetcher recipe

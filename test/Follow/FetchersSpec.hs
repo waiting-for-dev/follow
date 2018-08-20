@@ -24,17 +24,17 @@ spec = do
                 Nothing
             ]
       let fetcher = (\_recipe -> return entries) :: Fetcher
-      let directory = fetch recipe fetcher
+      let directory = fetch fetcher recipe
       fetchedEntries <- runExceptT (runResult $ fmap dEntries directory)
       fromRight [] fetchedEntries `shouldBe` entries
     it "associates given recipe with the Directory" $ do
       let fetcher = (\_recipe -> return []) :: Fetcher
-      let directory = fetch recipe fetcher
+      let directory = fetch fetcher recipe
       fetchedTitle <-
         runExceptT (runResult $ fmap rTitle (fmap dRecipe directory))
       fromRight "" fetchedTitle `shouldBe` "Title"
     it "returns back any error from the fetcher" $ do
       let fetcher =
             (\_recipe -> throwError $ FetchFeedError URLWrongFormat) :: Fetcher
-      result <- runExceptT (runResult $ fetch recipe fetcher)
+      result <- runExceptT (runResult $ fetch fetcher recipe)
       show result `shouldBe` "Left (FetchFeedError URLWrongFormat)"

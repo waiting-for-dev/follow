@@ -6,5 +6,5 @@ module Follow.Digesters where
 
 import           Follow.Types (Digester, Directory)
 
-digest :: Directory -> Digester a -> a
-digest directory digester = digester directory
+digest :: Digester a -> Directory -> a
+digest digester = digester
