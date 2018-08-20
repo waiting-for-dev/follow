@@ -12,7 +12,6 @@ module Follow.Types
   , Fetcher
   , Recipe(..)
   , Directory(..)
-  , Entries
   , Entry(..)
   , FetchError(..)
   , FetchFeedError(..)
@@ -38,14 +37,11 @@ data Recipe = Recipe
   , rArguments   :: Arguments -- ^ Arguments to be given to the fetcher strategy
   } deriving (Show)
 
--- | Directory, a list of Entries about an author or subject being followed.
+-- | Directory, a list of entries about an author or subject being followed.
 data Directory = Directory
   { dRecipe  :: Recipe
-  , dEntries :: Entries
+  , dEntries :: [Entry]
   } deriving (Show)
-
--- List of `Entry`.
-type Entries = [Entry]
 
 -- | Entry for some URI pointing to some `Directory` item.
 data Entry = Entry
@@ -79,8 +75,8 @@ newtype Result a = Result
   { runResult :: ExceptT FetchError IO a
   } deriving (Functor, Applicative, Monad, MonadIO, MonadError FetchError)
 
--- | Function to fetch the Entries with content from the recipe
-type Fetcher = Recipe -> Result Entries
+-- | Function to fetch the entries with content from the recipe
+type Fetcher = Recipe -> Result [Entry]
 
 -- | Any kind of error returned by any fetcher strategy. See `Follow.Fetchers`.
 newtype FetchError =
