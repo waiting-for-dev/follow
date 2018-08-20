@@ -1,5 +1,8 @@
 {-# LANGUAGE DataKinds #-}
 
+{-|
+Description: Inner wiring to transform a recipe for a feed into a directory.
+-}
 module Follow.Fetchers.Feed.Internal
   ( urlFromRecipe
   , feedToEntries

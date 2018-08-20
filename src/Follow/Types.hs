@@ -1,6 +1,6 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 
-{-
+{-|
 Description: Global definition of types.
 -}
 module Follow.Types

@@ -1,5 +1,5 @@
-{-
-Descripion: Strategy to fetch entries from a RSS or Atom feed.
+{-|
+Description: Strategy to fetch entries from a RSS or Atom feed.
 -}
 module Follow.Fetchers.Feed
   ( argumentsDSL
@@ -12,11 +12,11 @@ import           Follow.DSL.Format             (uriFormat)
 import           Follow.Fetchers.Feed.Internal
 import           Follow.Types                  (ArgumentsDSL, Fetcher)
 
--- | See `Follow.Types.ArgumentsDSL`
+-- | See `Follow.Types.ArgumentsDSL`.
 argumentsDSL :: ArgumentsDSL
 argumentsDSL = [("URL", toDyn <$> uriFormat)]
 
--- | See `Follow.Types.Fetcher`
+-- | See `Follow.Types.Fetcher`.
 fetcher :: Fetcher
 fetcher recipe = do
   url <- liftEither $ urlFromRecipe recipe

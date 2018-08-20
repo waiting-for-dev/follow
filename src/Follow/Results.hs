@@ -1,4 +1,4 @@
-{-
+{-|
 Description: Functions for further transformation of results.
 
 When you fetch and digest a recipe, you get something that can be

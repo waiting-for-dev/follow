@@ -1,3 +1,6 @@
+{-|
+ Description: Digests a recipe into a textual representation.
+-}
 {-# LANGUAGE OverloadedStrings #-}
 
 module Follow.Digesters.SimpleText
@@ -10,6 +13,7 @@ import qualified Data.Text    as T (concat, intercalate, replicate)
 import           Follow.Types (Digester, Directory (..), Entry (..),
                                Recipe (..))
 
+-- | See `Follow.Types.Digester+ .
 digester :: Digester Text
 digester directory =
   let recipe = dRecipe directory

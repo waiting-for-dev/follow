@@ -1,4 +1,4 @@
-{-
+{-|
 Description: Defines the base DSL from which a fetcher strategy can define extra items down below.
 -}
 module Follow.DSL.Format.Internal
