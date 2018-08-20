@@ -16,7 +16,9 @@ module Follow.Types
   , FetchError(..)
   , FetchFeedError(..)
   , Result(..)
-  , Digester(..)
+  , Digester
+  , Middleware
+  , MiddlewareArguments(..)
   ) where
 
 import           Control.Monad.Except   (ExceptT, MonadError, catchError,
@@ -92,5 +94,12 @@ data FetchFeedError
   deriving (Show)
 
 -- | Digesters are strategies to transform a directory into something
--- to be consumed by a user
+-- to be consumed by a user.
 type Digester a = Directory -> a
+
+-- | Middlewares are strategies transforming directories.
+type Middleware = MiddlewareArguments -> Directory -> Directory
+
+-- | Types for middleware arguments
+data MiddlewareArguments =
+  MiddlewareArgumentsDebugging

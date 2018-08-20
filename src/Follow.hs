@@ -6,12 +6,14 @@ defines global operational functions.
 module Follow
   ( module Follow.Fetchers
   , module Follow.Digesters
+  , module Follow.Middlewares
   , process
   ) where
 
-import           Follow.Digesters (digest)
-import           Follow.Fetchers  (fetch)
-import           Follow.Types     (Digester, Fetcher, Recipe, Result)
+import           Follow.Digesters   (digest)
+import           Follow.Fetchers    (fetch)
+import           Follow.Middlewares (applyMiddlewares)
+import           Follow.Types       (Digester, Fetcher, Recipe, Result)
 
 -- | Fetches and digests a recipe using given strategies
 process :: Fetcher -> Digester a -> Recipe -> Result a
