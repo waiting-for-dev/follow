@@ -1,3 +1,6 @@
+{-|
+Description: Predicate builders and combinators.
+-}
 module Follow.Middlewares.Filter.Internal
   ( equalP
   , infixP
@@ -15,24 +18,31 @@ import           Follow.Types (Entry, MFilterPredicate)
 
 type EntryFieldGetter a = Entry -> Maybe a
 
+-- | Predicate that returns `True` on equality.
 equalP :: Eq a => EntryFieldGetter a -> a -> MFilterPredicate
 equalP = liftP (==)
 
+-- | Predicate that returns `True` when given value is infix for the field.
 infixP :: EntryFieldGetter Text -> Text -> MFilterPredicate
 infixP = liftP T.isInfixOf
 
+-- | Predicate that returns `True` when given value is prefix for the field.
 prefixP :: EntryFieldGetter Text -> Text -> MFilterPredicate
 prefixP = liftP T.isPrefixOf
 
+-- | Predicate that returns `True` when given value is suffix for the field.
 suffixP :: EntryFieldGetter Text -> Text -> MFilterPredicate
 suffixP = liftP T.isSuffixOf
 
+-- | Combines two predicates with a boolean and.
 andP :: MFilterPredicate -> MFilterPredicate -> MFilterPredicate
 andP = liftB (&&)
 
+-- | Combines two predicates with a boolean or.
 orP :: MFilterPredicate -> MFilterPredicate -> MFilterPredicate
 orP = liftB (||)
 
+-- | Inverts a predicate.
 notP :: MFilterPredicate -> MFilterPredicate
 notP p entry = not $ p entry
 
