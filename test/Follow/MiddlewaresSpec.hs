@@ -22,9 +22,7 @@ spec =
       let middleware2 = addEntryMiddleware $ buildEntry "B"
       let result =
             applyMiddlewares
-              [ (middleware1, MiddlewareArgumentsDebugging)
-              , (middleware2, MiddlewareArgumentsDebugging)
-              ]
+              [(middleware1, MDebugging), (middleware2, MDebugging)]
               directory
       let resultEntries = dEntries result
       eTitle <$> resultEntries `shouldBe` [Just "B", Just "A"]

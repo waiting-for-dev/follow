@@ -103,7 +103,7 @@ type Middleware = MiddlewareArguments -> Directory -> Directory
 
 -- | Types for middleware arguments
 data MiddlewareArguments
-  = MiddlewareArgumentsDebugging
+  = MDebugging
   | MFilterPredicate MFilterPredicate
 
 -- | Predicate used in "Follow.Middlewares.Filter" to filter directory entries

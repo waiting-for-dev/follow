@@ -30,9 +30,5 @@ spec =
       result <-
         runExceptT
           (runResult $
-           process
-             fetcher
-             [(middleware, MiddlewareArgumentsDebugging)]
-             digester
-             recipe)
+           process fetcher [(middleware, MDebugging)] digester recipe)
       fromRight "" result `shouldBe` "Title updated // Empty Entries"
