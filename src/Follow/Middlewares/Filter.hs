@@ -8,22 +8,20 @@ predicate. The predicate is a function @Entry -> Bool@ (defined in
 There are some pre-built predicate builders. Exemple:
 
 @
-import Follow.Types (Entry(..), MiddlewareArguments (..))
+import Follow.Types (Entry(..))
 import Follow.Middlewares.Filter
 
 -- Suppose we have a `directory`
 
-apply (MFilterPredicate (eTitle `equal` "Some title")) directory
+apply (eTitle `equal` "Some title") directory
 @
 
 -}
 module Follow.Middlewares.Filter where
 
 import           Follow.Middlewares.Filter.Internal
-import           Follow.Types                       (Directory (..), Middleware,
-                                                     MiddlewareArguments (..))
+import           Follow.Types                       (Directory (..), Middleware)
 
 -- | See `Follow.Types.Middleware`.
-apply :: Middleware
-apply (MFilterPredicate p) directory =
-  directory {dEntries = filter p (dEntries directory)}
+apply :: MFilterPredicate -> Middleware
+apply p directory = directory {dEntries = filter p (dEntries directory)}

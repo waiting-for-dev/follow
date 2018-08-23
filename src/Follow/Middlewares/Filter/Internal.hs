@@ -9,12 +9,15 @@ module Follow.Middlewares.Filter.Internal
   , andP
   , orP
   , notP
+  , MFilterPredicate
   ) where
 
 import           Data.Maybe   (fromMaybe)
 import           Data.Text    (Text)
 import qualified Data.Text    as T (isInfixOf, isPrefixOf, isSuffixOf)
-import           Follow.Types (Entry, MFilterPredicate)
+import           Follow.Types (Entry)
+
+type MFilterPredicate = Entry -> Bool
 
 type EntryFieldGetter a = Entry -> Maybe a
 

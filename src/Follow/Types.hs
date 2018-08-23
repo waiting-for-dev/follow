@@ -18,8 +18,6 @@ module Follow.Types
   , Result(..)
   , Digester
   , Middleware
-  , MiddlewareArguments(..)
-  , MFilterPredicate
   ) where
 
 import           Control.Monad.Except   (ExceptT, MonadError, catchError,
@@ -99,12 +97,4 @@ data FetchFeedError
 type Digester a = Directory -> a
 
 -- | Middlewares are strategies transforming directories.
-type Middleware = MiddlewareArguments -> Directory -> Directory
-
--- | Types for middleware arguments
-data MiddlewareArguments
-  = MDebugging
-  | MFilterPredicate MFilterPredicate
-
--- | Predicate used in "Follow.Middlewares.Filter" to filter directory entries
-type MFilterPredicate = Entry -> Bool
+type Middleware = Directory -> Directory

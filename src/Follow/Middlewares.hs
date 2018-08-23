@@ -9,13 +9,9 @@ module Follow.Middlewares
   ( applyMiddlewares
   ) where
 
-import           Follow.Types (Directory, Middleware, MiddlewareArguments)
+import           Follow.Types (Directory, Middleware)
 
 -- | Applies, from left to right, given middlewares to the directory.
-applyMiddlewares ::
-     [(Middleware, MiddlewareArguments)] -> Directory -> Directory
+applyMiddlewares :: [Middleware] -> Directory -> Directory
 applyMiddlewares middlewares directory =
-  foldl
-    (\directory (middleware, arguments) -> middleware arguments directory)
-    directory
-    middlewares
+  foldl (\directory middleware -> middleware directory) directory middlewares
