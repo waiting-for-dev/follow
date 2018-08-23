@@ -1,9 +1,8 @@
 {-|
 Description: Middlewares are strategies to transform directories.
 
-Between fetching and digesting and recipe, it can be useful to
-transform a directory in some way, like filtering, sorting or
-whatever.
+Between fetching and digesting, it can be useful to transform a
+directory in some way, like filtering, sorting or whatever.
 -}
 module Follow.Middlewares
   ( applyMiddlewares

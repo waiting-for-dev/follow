@@ -10,7 +10,7 @@ module Follow.Types
   , Arguments
   , ArgumentsDSL
   , Fetcher
-  , Recipe(..)
+  , Header(..)
   , Directory(..)
   , Entry(..)
   , FetchError(..)
@@ -29,19 +29,18 @@ import           Data.Text              (Text)
 import qualified Network.HTTP.Req       as R (HttpException)
 import           Text.Parsec            (ParseError, Parsec)
 
--- | A recipe is the haskell representation of the information needed
--- to follow some author or subject on the Internet.
-data Recipe = Recipe
-  { rVersion     :: Text -- ^ Version of the DSL used.
-  , rTitle       :: Text -- ^ Title for the recipe; what is being followed.
-  , rDescription :: Text -- ^ A description for the recipe
-  , rTags        :: [Text] -- ^ Tags that apply to the recipe
-  , rArguments   :: Arguments -- ^ Arguments to be given to the fetcher strategy
+-- | Header for a subject to follow
+data Header = Header
+  { hVersion     :: Text -- ^ Version of the DSL used.
+  , hTitle       :: Text -- ^ Title of what is being followed.
+  , hDescription :: Text -- ^ A description
+  , hTags        :: [Text] -- ^ Tags that apply
+  , hArguments   :: Arguments -- ^ Arguments to be given to the fetcher strategy
   } deriving (Show)
 
 -- | Directory, a list of entries about an author or subject being followed.
 data Directory = Directory
-  { dRecipe  :: Recipe
+  { dHeader  :: Header
   , dEntries :: [Entry]
   } deriving (Show)
 
@@ -58,8 +57,8 @@ data Entry = Entry
 -- to whatever without any state.
 type Parse = Parsec String ()
 
--- | The result of a parsing: a `Follow.Recipe` or an error.
-type ParseResult = Either ParseError Recipe
+-- | The result of a parsing: a `Follow.Header` or an error.
+type ParseResult = Either ParseError Header
 
 type ArgumentName = String
 
@@ -77,7 +76,7 @@ newtype Result a = Result
   { runResult :: ExceptT FetchError IO a
   } deriving (Functor, Applicative, Monad, MonadIO, MonadError FetchError)
 
--- | Function to fetch the entries with content from the recipe
+-- | Function to fetch entries
 type Fetcher a = a -> Fetched
 
 type Fetched = Result [Entry]

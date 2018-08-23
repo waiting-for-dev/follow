@@ -15,8 +15,8 @@ module Follow.DSL.Parser
 
 import           Data.Text                  (pack)
 import           Follow.DSL.Format.Internal (format)
-import           Follow.Types               (ArgumentsDSL, ParseResult,
-                                             Recipe (..))
+import           Follow.Types               (ArgumentsDSL, Header (..),
+                                             ParseResult)
 import           Text.Parsec                (ParseError, parse)
 
 -- | Parses DSL from a string.
@@ -34,7 +34,7 @@ parse' source toParse argumentsDSL =
     Left error -> Left error
     Right (version, title, description, tags, arguments) ->
       Right
-        (Recipe
+        (Header
            (pack version)
            (pack title)
            (pack description)

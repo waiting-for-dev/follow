@@ -1,5 +1,5 @@
 {-|
- Description: Digests a recipe into a textual representation.
+ Description: Digests a subject into a textual representation.
 -}
 {-# LANGUAGE OverloadedStrings #-}
 
@@ -11,27 +11,27 @@ import           Data.Maybe   (fromMaybe)
 import           Data.Text    (Text)
 import qualified Data.Text    as T (concat, intercalate, replicate)
 import           Follow.Types (Digester, Directory (..), Entry (..),
-                               Recipe (..))
+                               Header (..))
 
 -- | See `Follow.Types.Digester+ .
 digester :: Digester Text
 digester directory =
-  let recipe = dRecipe directory
-      recipeTitle = rTitle recipe
-      recipeDescription = rDescription recipe
-      recipeTags = rTags recipe
+  let header = dHeader directory
+      headerTitle = hTitle header
+      headerDescription = hDescription header
+      headerTags = hTags header
       entries = dEntries directory
    in T.intercalate
         emptyLine
-        [ recipeTitle
-        , recipeDescription
-        , T.intercalate "," recipeTags
-        , recipeSeparator
+        [ headerTitle
+        , headerDescription
+        , T.intercalate "," headerTags
+        , headerSeparator
         , digestEntries entries
         ]
   where
-    recipeSeparator :: Text
-    recipeSeparator = T.replicate 80 "#"
+    headerSeparator :: Text
+    headerSeparator = T.replicate 80 "#"
 
 digestEntries :: [Entry] -> Text
 digestEntries entries = T.intercalate entrySeparator $ map digestEntry entries

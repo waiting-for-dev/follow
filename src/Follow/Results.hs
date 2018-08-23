@@ -1,7 +1,7 @@
 {-|
 Description: Functions for further transformation of results.
 
-When you fetch and digest a recipe, you get something that can be
+When you fetch and digest a subject, you get something that can be
 consumed by an end user. However, sometimes you need to further
 process it, like writting to a file or sending to a database.
 

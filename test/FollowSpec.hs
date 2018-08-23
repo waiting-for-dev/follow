@@ -8,24 +8,24 @@ import           Data.Text            (Text)
 import qualified Data.Text            as T (concat)
 import           Follow
 import           Follow.Types         (Digester, Directory (..), Fetched,
-                                       Middleware, Recipe (..), Result (..))
+                                       Header (..), Middleware, Result (..))
 import           Test.Hspec
 
 spec :: Spec
 spec =
   describe ".process" $ do
     it "fetches, applies middlewares and digests using given strategies" $ do
-      let recipe = Recipe "1.0" "Title" "Description" ["tag"] []
+      let header = Header "1.0" "Title" "Description" ["tag"] []
       let fetched = return [] :: Fetched
       let middleware =
             (\directory ->
-               directory {dRecipe = recipe {rTitle = "Title updated"}}) :: Middleware
+               directory {dHeader = header {hTitle = "Title updated"}}) :: Middleware
       let digester =
             (\directory ->
                case dEntries directory of
                  [] ->
-                   T.concat [rTitle $ dRecipe directory, " // Empty Entries"]
+                   T.concat [hTitle $ dHeader directory, " // Empty Entries"]
                  _ -> "Full Entries") :: Digester Text
       result <-
-        runExceptT (runResult $ process fetched [middleware] digester recipe)
+        runExceptT (runResult $ process fetched [middleware] digester header)
       fromRight "" result `shouldBe` "Title updated // Empty Entries"
