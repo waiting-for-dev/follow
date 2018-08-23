@@ -210,17 +210,15 @@ spec = do
       let result = parse' (format argumentsDSL) input
       let result' =
             fmap
-              (\(v, t, d, tg, args) ->
-                 ( v
-                 , t
+              (\(t, d, tg, args) ->
+                 ( t
                  , d
                  , tg
                  , map (\(n, v) -> (n, fromDynamic v :: Maybe String)) args))
               result
       result' `shouldBe`
         Right
-          ( "1.0"
-          , "title"
+          ( "title"
           , "description"
           , ["tag_a", "tag_b"]
           , [("ARG1", Just "value1"), ("ARG2", Just "value2")])

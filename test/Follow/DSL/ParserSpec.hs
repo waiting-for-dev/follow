@@ -30,7 +30,6 @@ spec = do
               , "ARG2 value_2"
               ]
       let header = parseDSL input argumentsDSL
-      hVersion <$> header `shouldBe` Right "1.0"
       hTitle <$> header `shouldBe` Right "title"
       hDescription <$> header `shouldBe` Right "description"
       hTags <$> header `shouldBe` Right ["tag_a", "tag_b"]
@@ -41,7 +40,6 @@ spec = do
     it "parses DSL file to a header" $ do
       path <- getDataFileName "test/Fixtures/Header"
       header <- parseDSLFile path argumentsDSL
-      hVersion <$> header `shouldBe` Right "1.0"
       hTitle <$> header `shouldBe` Right "title"
       hDescription <$> header `shouldBe` Right "description"
       hTags <$> header `shouldBe` Right ["tag_a", "tag_b"]

@@ -16,7 +16,7 @@ spec =
           (\directory ->
              Directory (dHeader directory) $ entry : (dEntries directory)) :: Middleware
     it "applies in order given middlewares" $ do
-      let header = Header "1.0" "Title" "Desc" ["tag"] []
+      let header = Header "Title" "Desc" ["tag"] []
       let directory = Directory header []
       let middleware1 = addEntryMiddleware $ buildEntry "A"
       let middleware2 = addEntryMiddleware $ buildEntry "B"

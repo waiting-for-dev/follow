@@ -31,8 +31,7 @@ import           Text.Parsec            (ParseError, Parsec)
 
 -- | Header for a subject to follow
 data Header = Header
-  { hVersion     :: Text -- ^ Version of the DSL used.
-  , hTitle       :: Text -- ^ Title of what is being followed.
+  { hTitle       :: Text -- ^ Title of what is being followed.
   , hDescription :: Text -- ^ A description
   , hTags        :: [Text] -- ^ Tags that apply
   , hArguments   :: Arguments -- ^ Arguments to be given to the fetcher strategy

@@ -13,7 +13,7 @@ spec =
   describe ".apply" $ do
     let buildEntry title = Entry Nothing Nothing (Just title) Nothing Nothing
     it "filter entries according to given predicate" $ do
-      let header = Header "1.0" "Title" "Description" ["tag"] []
+      let header = Header "Title" "Description" ["tag"] []
       let directory = Directory header [buildEntry "A", buildEntry "B"]
       let directory' = apply (eTitle `equalP` "A") directory
       (length $ dEntries directory') `shouldBe` 1
