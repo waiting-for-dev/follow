@@ -12,7 +12,7 @@ spec = do
   describe ".digest" $ do
     it "transform the directory using given digester" $ do
       let digester = (\_directory -> "DIGESTED") :: Digester Text
-      let header = Header "Title" "Desc" ["tag"] []
+      let header = Header "Title" "Desc" ["tag"]
       let directory = Directory header []
       let digested = digest digester directory
       digested `shouldBe` "DIGESTED"

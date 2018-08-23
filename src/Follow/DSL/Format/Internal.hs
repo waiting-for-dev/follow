@@ -41,7 +41,7 @@ type Tag = String
 type Tags = [Tag]
 
 -- | Format expected for the DSL String
-format :: ArgumentsDSL -> Parse (Title, Description, Tags, Arguments)
+format :: ArgumentsDSL -> Parse (Title, Description, Tags)
 format argumentsDSL = do
   versionLineFormat
   endOfLine
@@ -51,9 +51,9 @@ format argumentsDSL = do
   endOfLine
   tags <- tagsLineFormat
   -- next endOfLine is parsed in argumentsFormat
-  arguments <- argumentsFormat argumentsDSL
+  argumentsFormat argumentsDSL
   optional endOfLine
-  return (title, description, tags, arguments)
+  return (title, description, tags)
 
 -- | Format for a line consisting of a name/value pair
 lineFormat :: Name -> Parse a -> Parse a

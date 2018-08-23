@@ -32,5 +32,5 @@ parse' :: String -> String -> ArgumentsDSL -> ParseResult
 parse' source toParse argumentsDSL =
   case parse (format argumentsDSL) source toParse of
     Left error -> Left error
-    Right (title, description, tags, arguments) ->
-      Right (Header (pack title) (pack description) (pack <$> tags) arguments)
+    Right (title, description, tags) ->
+      Right (Header (pack title) (pack description) (pack <$> tags))

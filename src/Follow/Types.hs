@@ -34,7 +34,6 @@ data Header = Header
   { hTitle       :: Text -- ^ Title of what is being followed.
   , hDescription :: Text -- ^ A description
   , hTags        :: [Text] -- ^ Tags that apply
-  , hArguments   :: Arguments -- ^ Arguments to be given to the fetcher strategy
   } deriving (Show)
 
 -- | Directory, a list of entries about an author or subject being followed.

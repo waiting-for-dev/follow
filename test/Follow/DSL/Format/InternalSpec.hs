@@ -208,20 +208,7 @@ spec = do
             , ("ARG2", toDyn <$> string "value2")
             ]
       let result = parse' (format argumentsDSL) input
-      let result' =
-            fmap
-              (\(t, d, tg, args) ->
-                 ( t
-                 , d
-                 , tg
-                 , map (\(n, v) -> (n, fromDynamic v :: Maybe String)) args))
-              result
-      result' `shouldBe`
-        Right
-          ( "title"
-          , "description"
-          , ["tag_a", "tag_b"]
-          , [("ARG1", Just "value1"), ("ARG2", Just "value2")])
+      result `shouldBe` Right ("title", "description", ["tag_a", "tag_b"])
     it "allows a line break at the end" $ do
       let input =
             "VERSION 1.0\n\

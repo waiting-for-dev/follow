@@ -12,7 +12,7 @@ spec :: Spec
 spec =
   describe ".digester" $ do
     let isInfixOf' = flip T.isInfixOf
-    let header = Header "Header Title" "Header Description" ["tag"] []
+    let header = Header "Header Title" "Header Description" ["tag"]
     let entries =
           [ Entry
               (Just "http://a_url.com")

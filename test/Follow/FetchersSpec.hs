@@ -13,7 +13,7 @@ import           Test.Hspec
 spec :: Spec
 spec = do
   describe ".fetch" $ do
-    let header = Header "Title" "Description" ["tag"] []
+    let header = Header "Title" "Description" ["tag"]
     it "populates Directory Entries out of given fetcher" $ do
       let entries =
             [ Entry

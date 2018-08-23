@@ -15,7 +15,7 @@ spec :: Spec
 spec =
   describe ".process" $ do
     it "fetches, applies middlewares and digests using given strategies" $ do
-      let header = Header "Title" "Description" ["tag"] []
+      let header = Header "Title" "Description" ["tag"]
       let fetched = return [] :: Fetched
       let middleware =
             (\directory ->

@@ -16,8 +16,6 @@ spec = do
         [ ("ARG1", toDyn <$> string "value_1")
         , ("ARG2", toDyn <$> string "value_2")
         ]
-  let argumentsFromDyn =
-        fmap (\(n, v) -> (n, fromJust (fromDynamic v :: Maybe String)))
   describe ".parseDSL" $
     it "parses DSL to a header" $ do
       let input =
@@ -33,9 +31,6 @@ spec = do
       hTitle <$> header `shouldBe` Right "title"
       hDescription <$> header `shouldBe` Right "description"
       hTags <$> header `shouldBe` Right ["tag_a", "tag_b"]
-      argumentsFromDyn <$>
-        (hArguments <$> header) `shouldBe`
-        Right [("ARG1", "value_1"), ("ARG2", "value_2")]
   describe ".parseDSLFile" $
     it "parses DSL file to a header" $ do
       path <- getDataFileName "test/Fixtures/Header"
@@ -43,6 +38,3 @@ spec = do
       hTitle <$> header `shouldBe` Right "title"
       hDescription <$> header `shouldBe` Right "description"
       hTags <$> header `shouldBe` Right ["tag_a", "tag_b"]
-      argumentsFromDyn <$>
-        (hArguments <$> header) `shouldBe`
-        Right [("ARG1", "value_1"), ("ARG2", "value_2")]
