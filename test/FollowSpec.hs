@@ -7,7 +7,7 @@ import           Data.Either          (fromRight)
 import           Data.Text            (Text)
 import qualified Data.Text            as T (concat)
 import           Follow
-import           Follow.Types         (Digester, Directory (..), Fetcher,
+import           Follow.Types         (Digester, Directory (..), Fetched,
                                        Middleware, Recipe (..), Result (..))
 import           Test.Hspec
 
@@ -16,7 +16,7 @@ spec =
   describe ".process" $ do
     it "fetches, applies middlewares and digests using given strategies" $ do
       let recipe = Recipe "1.0" "Title" "Description" ["tag"] []
-      let fetcher = (\_recipe -> return []) :: Fetcher
+      let fetched = return [] :: Fetched
       let middleware =
             (\directory ->
                directory {dRecipe = recipe {rTitle = "Title updated"}}) :: Middleware
@@ -27,5 +27,5 @@ spec =
                    T.concat [rTitle $ dRecipe directory, " // Empty Entries"]
                  _ -> "Full Entries") :: Digester Text
       result <-
-        runExceptT (runResult $ process fetcher [middleware] digester recipe)
+        runExceptT (runResult $ process fetched [middleware] digester recipe)
       fromRight "" result `shouldBe` "Title updated // Empty Entries"

@@ -4,7 +4,7 @@
 Description: Inner wiring to transform a recipe for a feed into a directory.
 -}
 module Follow.Fetchers.Feed.Internal
-  ( urlFromRecipe
+  ( parseUrl
   , feedToEntries
   , getResponseBody
   , parseFeed
@@ -13,11 +13,8 @@ module Follow.Fetchers.Feed.Internal
 import           Control.Monad.Except (throwError)
 import qualified Data.ByteString      as BS (ByteString)
 import qualified Data.ByteString.Lazy as BL (ByteString)
-import           Data.Dynamic         (Dynamic, fromDynamic)
-import           Data.Maybe           (fromJust)
 import           Follow.Types         (Entry (..), FetchError (..),
-                                       FetchFeedError (..), Recipe (..),
-                                       Result (..))
+                                       FetchFeedError (..), Result (..))
 import qualified Network.HTTP.Req     as R (GET (..), HttpException, MonadHttp,
                                             NoReqBody (..), Option, Scheme (..),
                                             Url, handleHttpException,
@@ -33,18 +30,12 @@ type Url s = (R.Url s, R.Option s)
 
 type EitherUrl = (Either (Url R.Http) (Url R.Https))
 
--- | Extract the URL from the arguments of a recipe
-urlFromRecipe :: Recipe -> Either FetchError EitherUrl
-urlFromRecipe recipe =
-  case fromDynamic (dynamicUrl recipe) :: Maybe BS.ByteString of
-    Nothing -> Left $ FetchFeedError URLFromDynamicConversionFailure
-    Just value ->
-      case R.parseUrl value of
-        Nothing  -> Left $ FetchFeedError URLWrongFormat
-        Just url -> Right url
-  where
-    dynamicUrl :: Recipe -> Dynamic
-    dynamicUrl recipe = snd . head $ rArguments recipe
+-- | Parses a url type from a textual representation.
+parseUrl :: BS.ByteString -> Either FetchError EitherUrl
+parseUrl url =
+  case R.parseUrl url of
+    Nothing   -> Left $ FetchFeedError URLWrongFormat
+    Just url' -> Right url'
 
 -- | Performs a request to given url and returns just the response body
 getResponseBody :: EitherUrl -> Result BL.ByteString

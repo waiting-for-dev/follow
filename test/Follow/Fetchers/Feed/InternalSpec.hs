@@ -7,7 +7,7 @@ import           Data.Dynamic                  (toDyn)
 import           Data.Either                   (isRight)
 import           Data.Maybe                    (fromJust, isNothing)
 import           Follow.Fetchers.Feed.Internal
-import           Follow.Types                  (Entry (..), Recipe (..))
+import           Follow.Types                  (Entry (..))
 import qualified Network.HTTP.Req              as R (parseUrl)
 import           Test.Hspec
 import qualified Text.Feed.Import              as FI (parseFeedFromFile)

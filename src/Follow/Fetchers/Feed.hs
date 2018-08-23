@@ -2,24 +2,18 @@
 Description: Strategy to fetch entries from a RSS or Atom feed.
 -}
 module Follow.Fetchers.Feed
-  ( argumentsDSL
-  , fetcher
+  ( fetcher
   ) where
 
 import           Control.Monad.Except          (liftEither, runExceptT)
-import           Data.Dynamic                  (toDyn)
-import           Follow.DSL.Format             (uriFormat)
+import qualified Data.ByteString               as BS (ByteString)
 import           Follow.Fetchers.Feed.Internal
-import           Follow.Types                  (ArgumentsDSL, Fetcher)
-
--- | See `Follow.Types.ArgumentsDSL`.
-argumentsDSL :: ArgumentsDSL
-argumentsDSL = [("URL", toDyn <$> uriFormat)]
+import           Follow.Types                  (Fetcher)
 
 -- | See `Follow.Types.Fetcher`.
-fetcher :: Fetcher
-fetcher recipe = do
-  url <- liftEither $ urlFromRecipe recipe
-  response <- getResponseBody url
+fetcher :: Fetcher BS.ByteString
+fetcher url = do
+  url' <- liftEither $ parseUrl url
+  response <- getResponseBody url'
   feed <- liftEither $ parseFeed response
   return $ feedToEntries feed

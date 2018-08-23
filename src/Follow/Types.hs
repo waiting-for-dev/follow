@@ -18,6 +18,7 @@ module Follow.Types
   , Result(..)
   , Digester
   , Middleware
+  , Fetched
   ) where
 
 import           Control.Monad.Except   (ExceptT, MonadError, catchError,
@@ -77,7 +78,9 @@ newtype Result a = Result
   } deriving (Functor, Applicative, Monad, MonadIO, MonadError FetchError)
 
 -- | Function to fetch the entries with content from the recipe
-type Fetcher = Recipe -> Result [Entry]
+type Fetcher a = a -> Fetched
+
+type Fetched = Result [Entry]
 
 -- | Any kind of error returned by any fetcher strategy. See `Follow.Fetchers`.
 newtype FetchError =
@@ -86,8 +89,7 @@ newtype FetchError =
 
 -- | Errors returned by feed fetcher strategy. See `Follow.Fetchers.Feed`.
 data FetchFeedError
-  = URLFromDynamicConversionFailure
-  | URLWrongFormat
+  = URLWrongFormat
   | FeedWrongFormat
   | ResponseError R.HttpException
   deriving (Show)

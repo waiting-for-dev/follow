@@ -7,7 +7,7 @@ import           Data.Either          (fromRight, isLeft)
 import           Follow.Fetchers
 import           Follow.Types         (Directory (..), Entry (..),
                                        FetchError (..), FetchFeedError (..),
-                                       Fetcher, Recipe (..), Result (..))
+                                       Fetched, Recipe (..), Result (..))
 import           Test.Hspec
 
 spec :: Spec
@@ -23,18 +23,17 @@ spec = do
                 (Just "Description")
                 Nothing
             ]
-      let fetcher = (\_recipe -> return entries) :: Fetcher
-      let directory = fetch fetcher recipe
+      let fetched = return entries :: Fetched
+      let directory = fetch fetched recipe
       fetchedEntries <- runExceptT (runResult $ fmap dEntries directory)
       fromRight [] fetchedEntries `shouldBe` entries
     it "associates given recipe with the Directory" $ do
-      let fetcher = (\_recipe -> return []) :: Fetcher
-      let directory = fetch fetcher recipe
+      let fetched = return [] :: Fetched
+      let directory = fetch fetched recipe
       fetchedTitle <-
         runExceptT (runResult $ fmap rTitle (fmap dRecipe directory))
       fromRight "" fetchedTitle `shouldBe` "Title"
     it "returns back any error from the fetcher" $ do
-      let fetcher =
-            (\_recipe -> throwError $ FetchFeedError URLWrongFormat) :: Fetcher
-      result <- runExceptT (runResult $ fetch fetcher recipe)
+      let fetched = (throwError $ FetchFeedError URLWrongFormat) :: Fetched
+      result <- runExceptT (runResult $ fetch fetched recipe)
       show result `shouldBe` "Left (FetchFeedError URLWrongFormat)"
