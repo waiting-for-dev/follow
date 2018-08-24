@@ -5,14 +5,14 @@ module Follow.Digesters.SimpleTextSpec where
 import qualified Data.Text                   as T (isInfixOf)
 import           Follow.Digesters.SimpleText
 import           Follow.Types                (Directory (..), Entry (..),
-                                              Header (..))
+                                              Subject (..))
 import           Test.Hspec
 
 spec :: Spec
 spec =
   describe ".digester" $ do
     let isInfixOf' = flip T.isInfixOf
-    let header = Header "Header Title" "Header Description" ["tag"]
+    let subject = Subject "Subject Title" "Subject Description" ["tag"]
     let entries =
           [ Entry
               (Just "http://a_url.com")
@@ -21,13 +21,13 @@ spec =
               (Just "Entry Description")
               (Just "Entry Author")
           ]
-    let directory = Directory header entries
+    let directory = Directory subject entries
     let output = digester directory
-    it "adds header title" $ do
-      "Header Title" `shouldSatisfy` (isInfixOf' output)
-    it "adds header description" $ do
-      "Header Description" `shouldSatisfy` (isInfixOf' output)
-    it "adds header tags" $ do "tag" `shouldSatisfy` (isInfixOf' output)
+    it "adds subject title" $ do
+      "Subject Title" `shouldSatisfy` (isInfixOf' output)
+    it "adds subject description" $ do
+      "Subject Description" `shouldSatisfy` (isInfixOf' output)
+    it "adds subject tags" $ do "tag" `shouldSatisfy` (isInfixOf' output)
     it "adds each entry URL" $ do
       "http://a_url.com" `shouldSatisfy` (isInfixOf' output)
     it "adds each entry title" $ do

@@ -11,15 +11,15 @@ import           Data.Maybe   (fromMaybe)
 import           Data.Text    (Text)
 import qualified Data.Text    as T (concat, intercalate, replicate)
 import           Follow.Types (Digester, Directory (..), Entry (..),
-                               Header (..))
+                               Subject (..))
 
 -- | See `Follow.Types.Digester+ .
 digester :: Digester Text
 digester directory =
-  let header = dHeader directory
-      headerTitle = hTitle header
-      headerDescription = hDescription header
-      headerTags = hTags header
+  let header = dSubject directory
+      headerTitle = sTitle header
+      headerDescription = sDescription header
+      headerTags = sTags header
       entries = dEntries directory
    in T.intercalate
         emptyLine

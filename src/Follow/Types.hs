@@ -10,7 +10,7 @@ module Follow.Types
   , Arguments
   , ArgumentsDSL
   , Fetcher
-  , Header(..)
+  , Subject(..)
   , Directory(..)
   , Entry(..)
   , FetchError(..)
@@ -29,16 +29,16 @@ import           Data.Text              (Text)
 import qualified Network.HTTP.Req       as R (HttpException)
 import           Text.Parsec            (ParseError, Parsec)
 
--- | Header for a subject to follow
-data Header = Header
-  { hTitle       :: Text -- ^ Title of what is being followed.
-  , hDescription :: Text -- ^ A description
-  , hTags        :: [Text] -- ^ Tags that apply
-  } deriving (Show)
+-- | Subject to follow
+data Subject = Subject
+  { sTitle       :: Text -- ^ Title of what is being followed.
+  , sDescription :: Text -- ^ A description
+  , sTags        :: [Text] -- ^ Tags that apply
+  } deriving (Eq, Show)
 
 -- | Directory, a list of entries about an author or subject being followed.
 data Directory = Directory
-  { dHeader  :: Header
+  { dSubject :: Subject
   , dEntries :: [Entry]
   } deriving (Show)
 
@@ -55,8 +55,8 @@ data Entry = Entry
 -- to whatever without any state.
 type Parse = Parsec String ()
 
--- | The result of a parsing: a `Follow.Header` or an error.
-type ParseResult = Either ParseError Header
+-- | The result of a parsing: a `Follow.Subject` or an error.
+type ParseResult = Either ParseError Subject
 
 type ArgumentName = String
 

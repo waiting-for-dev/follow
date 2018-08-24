@@ -13,10 +13,10 @@ module Follow
 import           Follow.Digesters   (digest)
 import           Follow.Fetchers    (fetch)
 import           Follow.Middlewares (applyMiddlewares)
-import           Follow.Types       (Digester, Fetched, Header, Middleware,
-                                     Result)
+import           Follow.Types       (Digester, Fetched, Middleware, Result,
+                                     Subject)
 
--- | Fetches, apply middlewares and digests using given header
-process :: Fetched -> [Middleware] -> Digester a -> Header -> Result a
-process fetched middlewares digester header =
-  digest digester . applyMiddlewares middlewares <$> fetch fetched header
+-- | Fetches, apply middlewares and digests using given subject
+process :: Fetched -> [Middleware] -> Digester a -> Subject -> Result a
+process fetched middlewares digester subject =
+  digest digester . applyMiddlewares middlewares <$> fetch fetched subject

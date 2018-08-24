@@ -7,13 +7,13 @@ import           Data.Either          (fromRight, isLeft)
 import           Follow.Fetchers
 import           Follow.Types         (Directory (..), Entry (..),
                                        FetchError (..), FetchFeedError (..),
-                                       Fetched, Header (..), Result (..))
+                                       Fetched, Result (..), Subject (..))
 import           Test.Hspec
 
 spec :: Spec
 spec = do
   describe ".fetch" $ do
-    let header = Header "Title" "Description" ["tag"]
+    let subject = Subject "Title" "Description" ["tag"]
     it "populates Directory Entries out of given fetcher" $ do
       let entries =
             [ Entry
@@ -24,16 +24,16 @@ spec = do
                 Nothing
             ]
       let fetched = return entries :: Fetched
-      let directory = fetch fetched header
+      let directory = fetch fetched subject
       fetchedEntries <- runExceptT (runResult $ fmap dEntries directory)
       fromRight [] fetchedEntries `shouldBe` entries
-    it "associates given header with the Directory" $ do
+    it "associates given subject with the Directory" $ do
       let fetched = return [] :: Fetched
-      let directory = fetch fetched header
+      let directory = fetch fetched subject
       fetchedTitle <-
-        runExceptT (runResult $ fmap hTitle (fmap dHeader directory))
+        runExceptT (runResult $ fmap sTitle (fmap dSubject directory))
       fromRight "" fetchedTitle `shouldBe` "Title"
     it "returns back any error from the fetcher" $ do
       let fetched = (throwError $ FetchFeedError URLWrongFormat) :: Fetched
-      result <- runExceptT (runResult $ fetch fetched header)
+      result <- runExceptT (runResult $ fetch fetched subject)
       show result `shouldBe` "Left (FetchFeedError URLWrongFormat)"
