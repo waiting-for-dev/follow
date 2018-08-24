@@ -100,6 +100,7 @@ import Follow.Digesters.SimpleText
 
 haskellContent :: Result Text
 haskellContent = digest SimpleText.digest haskellFilteredDirectory
+```
 
 ## Combining sources and middlewares
 
