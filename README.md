@@ -13,7 +13,6 @@ title, a description and a list of tags, all of them being of type
 {-# LANGUAGE OverloadedStrings #-}
 
 import Follow
-import Data.Text (Text)
 
 haskellSubject :: Subject
 haskellSubject =
