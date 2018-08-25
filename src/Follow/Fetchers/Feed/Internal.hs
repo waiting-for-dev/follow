@@ -1,7 +1,10 @@
 {-# LANGUAGE DataKinds #-}
 
 {-|
-Description: Inner wiring to transform a recipe for a feed into a directory.
+Description: Wiring for the feed fecther strategy.
+
+This module defains low level helper functions to be used by the feed
+fetcher strategy.
 -}
 module Follow.Fetchers.Feed.Internal
   ( parseUrl
@@ -45,12 +48,12 @@ getResponseBody = either fetch fetch
     fetch (url, option) =
       R.responseBody <$> R.req R.GET url R.NoReqBody R.lbsResponse option
 
--- | Parses a feed
+-- | Parses a feed type from a textual representation.
 parseFeed :: BL.ByteString -> Either FetchError F.Feed
 parseFeed body =
   maybe (Left $ FetchFeedError FeedWrongFormat) Right $ F.parseFeedSource body
 
--- | Transforms a feed to a list of `Follow.Types.Entry`
+-- | Transforms a feed to a list of entries.
 feedToEntries :: F.Feed -> [Entry]
 feedToEntries feed = itemToEntry <$> F.feedItems feed
   where
@@ -63,6 +66,6 @@ feedToEntries feed = itemToEntry <$> F.feedItems feed
         (F.getItemDescription item)
         (F.getItemAuthor item)
 
--- | Declares how to handle request errors
+-- | Declares how to handle request errors.
 instance R.MonadHttp Result where
   handleHttpException e = throwError $ FetchFeedError (ResponseError e)

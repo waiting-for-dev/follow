@@ -3,9 +3,8 @@
 module Follow.Middlewares.FilterSpec where
 
 import           Follow.Middlewares.Filter
-import           Follow.Middlewares.Filter.Internal
-import           Follow.Types                       (Directory (..), Entry (..),
-                                                     Middleware, Subject (..))
+import           Follow.Types              (Directory (..), Entry (..),
+                                            Middleware, Subject (..))
 import           Test.Hspec
 
 spec :: Spec

@@ -1,8 +1,12 @@
 {-|
-Description: Middlewares are strategies to transform directories.
+Description: Top namespace to define middleware strategies and global
+             middleware functions.
 
-Between fetching and digesting, it can be useful to transform a
-directory in some way, like filtering, sorting or whatever.
+Middlewares are strategies that modify a directory in some
+way, like filtering or sorting. They are using between fetching and digesting subject.
+
+This module acts like the top namespace to define middleware
+strategies, along with functions to be used in the middleware scope.
 -}
 module Follow.Middlewares
   ( applyMiddlewares

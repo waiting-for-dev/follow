@@ -1,27 +1,37 @@
 {-|
-Description: Middleware to filter entries according a predicate.
+Description: Middleware to filter entries according to a predicate.
 
 This middleware allows to filter the directory entries according to a
-predicate. The predicate is a function @Entry -> Bool@ (defined in
-`Follow.Types.MFilterPredicate`).
+predicate. The predicate is a function @Entry -> Bool@.
 
-There are some pre-built predicate builders. Exemple:
+Some pre-built predicate builders are also exported. Example:
 
 @
-import Follow.Types (Entry(..))
+import Follow
 import Follow.Middlewares.Filter
 
--- Suppose we have a `directory`
+-- Suppose we have a `Directory` d
 
-apply (eTitle `equal` "Some title") directory
+apply (eTitle `equalP` "Some title") d
 @
 
 -}
-module Follow.Middlewares.Filter where
+module Follow.Middlewares.Filter
+  ( apply
+  , Getter
+  , Predicate
+  , equalP
+  , infixP
+  , prefixP
+  , suffixP
+  , andP
+  , orP
+  , notP
+  ) where
 
 import           Follow.Middlewares.Filter.Internal
 import           Follow.Types                       (Directory (..), Middleware)
 
--- | See `Follow.Types.Middleware`.
-apply :: MFilterPredicate -> Middleware
+-- | Middleware to filter a directory according to a given predicate.
+apply :: Predicate -> Middleware
 apply p directory = directory {dEntries = filter p (dEntries directory)}

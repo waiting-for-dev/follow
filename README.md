@@ -102,7 +102,7 @@ haskellContent :: Result Text
 haskellContent = digest SimpleText.digest haskellFilteredDirectory
 ```
 
-## Combining sources and middlewares
+## Recipes: Combining sources and middlewares
 
 Content is not limited to be fetched from a single source. Instead, a
 directory can be built merging the entries fetched from different

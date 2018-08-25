@@ -1,11 +1,14 @@
 {- |
-Description: Top namespace to define digester strategies to transform
-             directories into something consumible by an user.
+Description: Top namespace to define digester strategies and global
+             digesting functions.
 -}
-module Follow.Digesters where
+module Follow.Digesters
+  ( digest
+  ) where
 
 import           Follow.Types (Digester, Directory)
 
--- | Transform a directory into something using given digester
+-- | Digests a directory, using given digester, into something
+-- consumible by an end user.
 digest :: Digester a -> Directory -> a
 digest digester = digester

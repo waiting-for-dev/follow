@@ -1,8 +1,11 @@
-{-|
- Description: Digests a subject into a textual representation.
--}
 {-# LANGUAGE OverloadedStrings #-}
 
+{-|
+Description: Digests a subject into a textual representation.
+
+This module defines a digester which justs takes the directory and
+transforms it into a text with a minimal format.
+-}
 module Follow.Digesters.SimpleText
   ( digester
   ) where
@@ -13,7 +16,8 @@ import qualified Data.Text    as T (concat, intercalate, replicate)
 import           Follow.Types (Digester, Directory (..), Entry (..),
                                Subject (..))
 
--- | See `Follow.Types.Digester+ .
+-- | The digester strategy to transform a directory into a simple text
+-- representation.
 digester :: Digester Text
 digester directory =
   let header = dSubject directory

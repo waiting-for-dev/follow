@@ -1,7 +1,9 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 
 {-|
-Description: Global definition of types.
+Description: Definition of types.
+
+This module defines the types used in the whole application.
 -}
 module Follow.Types
   ( Parse
@@ -9,16 +11,16 @@ module Follow.Types
   , ArgumentName
   , Arguments
   , ArgumentsDSL
-  , Fetcher
   , Subject(..)
-  , Directory(..)
   , Entry(..)
+  , Directory(..)
+  , Result(..)
+  , Fetcher
+  , Fetched
   , FetchError(..)
   , FetchFeedError(..)
-  , Result(..)
-  , Digester
   , Middleware
-  , Fetched
+  , Digester
   ) where
 
 import           Control.Monad.Except   (ExceptT, MonadError, catchError,
@@ -29,26 +31,28 @@ import           Data.Text              (Text)
 import qualified Network.HTTP.Req       as R (HttpException)
 import           Text.Parsec            (ParseError, Parsec)
 
--- | Subject to follow
+-- | Subject being followed. The whole idea of `Follow` is being able
+-- to build strategies to gather URIs for the content published about any
+-- subject.
 data Subject = Subject
-  { sTitle       :: Text -- ^ Title of what is being followed.
-  , sDescription :: Text -- ^ A description
-  , sTags        :: [Text] -- ^ Tags that apply
+  { sTitle       :: Text -- ^ Title.
+  , sDescription :: Text -- ^ Description.
+  , sTags        :: [Text] -- ^ List of tags.
   } deriving (Eq, Show)
 
--- | Directory, a list of entries about an author or subject being followed.
-data Directory = Directory
-  { dSubject :: Subject
-  , dEntries :: [Entry]
-  } deriving (Show)
-
--- | Entry for some URI pointing to some `Directory` item.
+-- | An item of content that has been published somewhere.
 data Entry = Entry
-  { eURI         :: Maybe Text
-  , eGUID        :: Maybe Text
-  , eTitle       :: Maybe Text
-  , eDescription :: Maybe Text
-  , eAuthor      :: Maybe Text
+  { eURI         :: Maybe Text -- ^ URI that identifies the location of the item.
+  , eGUID        :: Maybe Text -- ^ Unique identifier.
+  , eTitle       :: Maybe Text -- ^ Title.
+  , eDescription :: Maybe Text -- ^ Description.
+  , eAuthor      :: Maybe Text -- ^ Author.
+  } deriving (Eq, Show)
+
+-- | Gathering of `Item` published for some `Subject`.
+data Directory = Directory
+  { dSubject :: Subject -- ^ The subject.
+  , dEntries :: [Entry] -- ^ The list of entries.
   } deriving (Eq, Show)
 
 -- Type alias for the common parsing format for the DSL: from a string
@@ -68,18 +72,20 @@ type Arguments = [(ArgumentName, Dynamic)]
 -- value.
 type ArgumentsDSL = [(ArgumentName, Parse Dynamic)]
 
--- | A final result, which has been obtained reaching the outside
--- world and contains either what is expected or a fetch error.
+-- | A final result of something. It has been obtained reaching the
+-- outside world and contains either what is expected or a fetch
+-- error. It is just a wrapper of `ExceptT`.
 newtype Result a = Result
   { runResult :: ExceptT FetchError IO a
   } deriving (Functor, Applicative, Monad, MonadIO, MonadError FetchError)
 
--- | Function to fetch entries
-type Fetcher a = a -> Fetched
+-- | Function to fetch a list of `Entry` from the outside world. See `Fetched`.
+type Fetcher arguments = arguments -> Fetched
 
+-- | Return value of a `Fetcher`: a list of `Entry` or an error (see `FetchError`).
 type Fetched = Result [Entry]
 
--- | Any kind of error returned by any fetcher strategy. See `Follow.Fetchers`.
+-- | An error returned by a `Fetcher`.
 newtype FetchError =
   FetchFeedError FetchFeedError
   deriving (Show)
@@ -91,9 +97,10 @@ data FetchFeedError
   | ResponseError R.HttpException
   deriving (Show)
 
--- | Digesters are strategies to transform a directory into something
--- to be consumed by a user.
-type Digester a = Directory -> a
-
--- | Middlewares are strategies transforming directories.
+-- | Middlewares are strategies to modify a directory. They are used
+-- after fetching entries but before digesting them.
 type Middleware = Directory -> Directory
+
+-- | Digesters are strategies to transform a directory into something
+-- to be consumed by an end user.
+type Digester a = Directory -> a

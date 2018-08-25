@@ -24,18 +24,18 @@ spec :: Spec
 spec = do
   describe ".fetcher" $ do
     it "fetches entries from given url" $ do
-      let entries = fetcher feedEndPoint
+      let entries = fetch feedEndPoint
       let entry = fmap head entries
       let url = fmap (fromJust . eURI) entry
       isInfix <- runExceptT (runResult $ fmap (isInfixOf "nytimes") url)
       isInfix `shouldSatisfy` isRight
     it "returns error when URL is not valid" $ do
-      result <- runExceptT (runResult $ fetcher invalidEndPoint)
+      result <- runExceptT (runResult $ fetch invalidEndPoint)
       show result `shouldBe` "Left (FetchFeedError URLWrongFormat)"
     it "returns error when response can't be parsed to a feed" $ do
-      result <- runExceptT (runResult $ fetcher simpleEndPoint)
+      result <- runExceptT (runResult $ fetch simpleEndPoint)
       show result `shouldBe` "Left (FetchFeedError FeedWrongFormat)"
     it "returns the http error when it happens" $ do
       Left (FetchFeedError (ResponseError (R.VanillaHttpException (H.HttpExceptionRequest _ (H.StatusCodeException response _))))) <-
-        runExceptT (runResult $ fetcher (endPointWithStatus 404))
+        runExceptT (runResult $ fetch (endPointWithStatus 404))
       H.responseStatus response `shouldBe` (toEnum 404)
