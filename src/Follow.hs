@@ -9,47 +9,58 @@ available. In addition, you probably will need to import individual
 fetchers, middlewares and digesters.
 -}
 module Follow
-  ( buildDirectory
+  ( Recipe(..)
+  , Subject(..)
+  , Entry(..)
+  , Directory(..)
+  , Result(..)
+  , Fetcher
+  , Step
+  , Fetched
+  , FetchError(..)
+  , FetchFeedError(..)
+  , Middleware
+  , Digester
+  , directoryFromRecipe
+  , directoryFromFetched
   , applyMiddlewares
-  , process
-  , processRecipe
+  , applySteps
+  , emptyDirectory
   ) where
 
 import           Data.Foldable (foldlM)
-import           Follow.Types  (Digester, Directory (..), Entry (..), Fetched,
-                                Fetcher, Middleware, Recipe (..), Result,
+import           Follow.Types  (Digester, Directory (..), Entry (..),
+                                FetchError, FetchFeedError, Fetched, Fetcher,
+                                Middleware, Recipe (..), Result, Step,
                                 Subject (..))
+
+-- | Builds a directory from the specification stored in a recipe
+directoryFromRecipe :: Recipe -> Result Directory
+directoryFromRecipe recipe =
+  let Recipe {rSubject = subject, rSteps = steps, rMiddlewares = middlewares} =
+        recipe
+   in applyMiddlewares middlewares <$> applySteps (emptyDirectory subject) steps
 
 -- | Helper to build a directory from a subject and a list of fetched
 -- entries.
-buildDirectory :: Fetched -> Subject -> Result Directory
-buildDirectory fetched header = Directory header <$> fetched
+directoryFromFetched :: Fetched -> Subject -> Result Directory
+directoryFromFetched fetched header = Directory header <$> fetched
 
 -- | Applies, from left to right, given middlewares to the directory.
 applyMiddlewares :: [Middleware] -> Directory -> Directory
 applyMiddlewares = flip $ foldl (flip ($))
 
--- | Fetches, apply middlewares and digests using given subject
-process :: Fetched -> [Middleware] -> Digester a -> Subject -> Result a
-process fetched middlewares digester subject =
-  digester . applyMiddlewares middlewares <$> buildDirectory fetched subject
-
--- | Builds a directory from the specification stored in a recipe
-processRecipe :: Recipe -> Result Directory
-processRecipe recipe =
-  let Recipe {rSubject = subject, rSteps = steps, rMiddlewares = middlewares} =
-        recipe
-   in applyMiddlewares middlewares <$> applySteps (initDir subject) steps
-
-applySteps :: Directory -> [(Fetched, [Middleware])] -> Result Directory
+-- | Applies, from left to right, a list of steps to given directory.
+applySteps :: Directory -> [Step] -> Result Directory
 applySteps = foldlM applyStep
   where
-    applyStep :: Directory -> (Fetched, [Middleware]) -> Result Directory
+    applyStep :: Directory -> Step -> Result Directory
     applyStep directory (fetched, middlewares) =
       applyMiddlewares middlewares . concatEntries directory <$> fetched
 
-initDir :: Subject -> Directory
-initDir s = Directory {dSubject = s, dEntries = mempty}
+-- | Creates a directory with given subject and no entries.
+emptyDirectory :: Subject -> Directory
+emptyDirectory s = Directory {dSubject = s, dEntries = mempty}
 
 concatEntries :: Directory -> [Entry] -> Directory
 concatEntries d e = d {dEntries = dEntries d ++ e}

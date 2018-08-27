@@ -11,16 +11,17 @@ module Follow.Types
   , ArgumentName
   , Arguments
   , ArgumentsDSL
+  , Recipe(..)
   , Subject(..)
   , Entry(..)
   , Directory(..)
   , Result(..)
   , Fetcher
+  , Step
   , Fetched
   , FetchError(..)
   , FetchFeedError(..)
   , Middleware
-  , Recipe(..)
   , Digester
   ) where
 
@@ -102,12 +103,14 @@ data FetchFeedError
 -- after fetching entries but before digesting them.
 type Middleware = Directory -> Directory
 
+-- | A list of middlewares to be applied to some fetched entries.
+type Step = (Fetched, [Middleware])
+
 -- | A recipe is a specification of a complete strategy to create the
 -- content to follow a subject.
 data Recipe = Recipe
   { rSubject     :: Subject -- ^ The subject being followed.
-  , rSteps       :: [(Fetched, [Middleware])] -- ^ List of fetched entries
-  -- paired with a list of middlewares to apply at each fetched step.
+  , rSteps       :: [Step] -- ^ List of steps to be applied.
   , rMiddlewares :: [Middleware] -- ^ List of middlewares to apply to the result of all steps.
   }
 
