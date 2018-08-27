@@ -7,7 +7,7 @@ import           Data.Either          (fromRight)
 import           Data.Text            (Text)
 import qualified Data.Text            as T (concat)
 import           Follow
-import           Follow.Types         (Digester, Directory (..),
+import           Follow.Types         (Digester, Directory (..), Entry (..),
                                        FetchError (..), FetchFeedError (..),
                                        Fetched, Middleware, Recipe (..),
                                        Result (..), Subject (..))
@@ -40,6 +40,20 @@ spec = do
       let fetched = (throwError $ FetchFeedError URLWrongFormat) :: Fetched
       result <- runExceptT (runResult $ buildDirectory fetched subject)
       show result `shouldBe` "Left (FetchFeedError URLWrongFormat)"
+  describe ".applyMiddlewares" $ do
+    let buildEntry title =
+          Entry Nothing (Just title) (Just title) Nothing Nothing
+    let addEntryMiddleware entry =
+          (\directory ->
+             Directory (dSubject directory) $ entry : (dEntries directory)) :: Middleware
+    it "applies in order given middlewares" $ do
+      let subject = Subject "Title" "Desc" ["tag"]
+      let directory = Directory subject []
+      let middleware1 = addEntryMiddleware $ buildEntry "A"
+      let middleware2 = addEntryMiddleware $ buildEntry "B"
+      let result = applyMiddlewares [middleware1, middleware2] directory
+      let resultEntries = dEntries result
+      eTitle <$> resultEntries `shouldBe` [Just "B", Just "A"]
   describe ".process" $ do
     it "fetches, applies middlewares and digests using given strategies" $ do
       let subject = Subject "Title" "Description" ["tag"]
