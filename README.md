@@ -54,14 +54,15 @@ wrapping.
 Any fetcher can be used, but `Follow` tries to ship with common
 ones. Right now, it only provides a feed fetcher.
 
-The function `buildDirectory` can be used to glue a subject with some fetched content:
+The function `directoryFromFetched` can be used to glue a subject with
+some fetched content:
 
 ```haskell
 import qualified Follow.Fetchers.Feed as Feed
 
 haskellDirectory :: Result Directory
 haskellDirectory =
-  buildDirectory (Feed.fetch "https://bartoszmilewski.com/feed/") subject
+  directoryFromFetched (Feed.fetch "https://bartoszmilewski.com/feed/") subject
 ```
 
 ## Middlewares
@@ -73,14 +74,12 @@ Directory` which purpose is exactly that.
 The aim of `Follow` is to provide some common middlewares. For now,
 just a middleware to filter entries is provided.
 
-The function `applyMiddleware` can be used:
-
 ```haskell
 import qualified Follow.Middlewares.Filter as Filter
 
 haskellFilteredDirectory :: Result Directory
 haskellFilteredDirectory =
-  applyMiddleware (Filter.apply (eTitle `infixP` "Haskell")) <$> haskellDirectory
+  Filter.apply (eTitle `infixP` "Haskell") <$> haskellDirectory
 ```
 
 ## Digesters
@@ -130,8 +129,9 @@ haskellRecipe =
     []
 ```
 
-`digestRecipe` can be used to consume it in a quick way:
+You can combine the function `directoryFromRecipe` and some digester
+to quickly consume a recipe:
 
 ```haskell
-digestRecipe SimpleText.digest haskellRecipe
+SimpleText.digest $ directoryFromRecipe recipe
 ```
