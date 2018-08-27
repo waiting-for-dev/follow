@@ -16,5 +16,4 @@ import           Follow.Types (Directory, Middleware)
 
 -- | Applies, from left to right, given middlewares to the directory.
 applyMiddlewares :: [Middleware] -> Directory -> Directory
-applyMiddlewares middlewares directory =
-  foldl (\directory middleware -> middleware directory) directory middlewares
+applyMiddlewares = flip $ foldl (flip ($))

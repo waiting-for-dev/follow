@@ -20,6 +20,7 @@ module Follow.Types
   , FetchError(..)
   , FetchFeedError(..)
   , Middleware
+  , Recipe(..)
   , Digester
   ) where
 
@@ -100,6 +101,15 @@ data FetchFeedError
 -- | Middlewares are strategies to modify a directory. They are used
 -- after fetching entries but before digesting them.
 type Middleware = Directory -> Directory
+
+-- | A recipe is a specification of a complete strategy to create the
+-- content to follow a subject.
+data Recipe = Recipe
+  { rSubject     :: Subject -- ^ The subject being followed.
+  , rSteps       :: [(Fetched, [Middleware])] -- ^ List of fetched entries
+  -- paired with a list of middlewares to apply at each fetched step.
+  , rMiddlewares :: [Middleware] -- ^ List of middlewares to apply to the result of all steps.
+  }
 
 -- | Digesters are strategies to transform a directory into something
 -- to be consumed by an end user.
