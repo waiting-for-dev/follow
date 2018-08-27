@@ -10,7 +10,7 @@ import           Test.Hspec
 
 spec :: Spec
 spec =
-  describe ".digester" $ do
+  describe ".digest" $ do
     let isInfixOf' = flip T.isInfixOf
     let subject = Subject "Subject Title" "Subject Description" ["tag"]
     let entries =
@@ -22,7 +22,7 @@ spec =
               (Just "Entry Author")
           ]
     let directory = Directory subject entries
-    let output = digester directory
+    let output = digest directory
     it "adds subject title" $ do
       "Subject Title" `shouldSatisfy` (isInfixOf' output)
     it "adds subject description" $ do

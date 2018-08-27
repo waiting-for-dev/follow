@@ -10,7 +10,6 @@ fetchers, middlewares and digesters.
 -}
 module Follow
   ( module Follow.Fetchers
-  , module Follow.Digesters
   , module Follow.Middlewares
   , module Follow.Types
   , process
@@ -18,7 +17,6 @@ module Follow
   ) where
 
 import           Data.Foldable      (foldlM)
-import           Follow.Digesters   (digest)
 import           Follow.Fetchers    (buildDirectory)
 import           Follow.Middlewares (applyMiddlewares)
 import           Follow.Types       (Digester, Directory (..), Entry (..),
@@ -28,8 +26,7 @@ import           Follow.Types       (Digester, Directory (..), Entry (..),
 -- | Fetches, apply middlewares and digests using given subject
 process :: Fetched -> [Middleware] -> Digester a -> Subject -> Result a
 process fetched middlewares digester subject =
-  digest digester . applyMiddlewares middlewares <$>
-  buildDirectory fetched subject
+  digester . applyMiddlewares middlewares <$> buildDirectory fetched subject
 
 -- | Builds a directory from the specification stored in a recipe
 processRecipe :: Recipe -> Result Directory

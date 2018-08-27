@@ -92,13 +92,11 @@ it. A `Digester` is a function `Directory -> a` that transform a
 As before, `Follow` wants to provide useful ones out of the box. Right
 now, however, it only ships with a simple text digester.
 
-`digest` function can be used:
-
 ```haskell
 import Follow.Digesters.SimpleText
 
 haskellContent :: Result Text
-haskellContent = digest SimpleText.digest haskellFilteredDirectory
+haskellContent = SimpleText.digest haskellFilteredDirectory
 ```
 
 ## Recipes: Combining sources and middlewares

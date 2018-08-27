@@ -7,7 +7,7 @@ This module defines a digester which justs takes the directory and
 transforms it into a text with a minimal format.
 -}
 module Follow.Digesters.SimpleText
-  ( digester
+  ( digest
   ) where
 
 import           Data.Maybe   (fromMaybe)
@@ -18,8 +18,8 @@ import           Follow.Types (Digester, Directory (..), Entry (..),
 
 -- | The digester strategy to transform a directory into a simple text
 -- representation.
-digester :: Digester Text
-digester directory =
+digest :: Digester Text
+digest directory =
   let header = dSubject directory
       headerTitle = sTitle header
       headerDescription = sDescription header
