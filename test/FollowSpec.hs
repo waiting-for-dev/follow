@@ -110,3 +110,14 @@ spec = do
     let directory = emptyDirectory subject
     it "assigns given subject" $ do dSubject directory `shouldBe` subject
     it "assigns empty list as entries" $ do dEntries directory `shouldBe` []
+  describe ".mergeEntries" $ do
+    let subject = Subject "Title" "Description" ["tag"]
+    let entry1 = entryBuilder "1"
+    let entry2 = entryBuilder "2"
+    let directory = Directory subject [entry1]
+    it "concatenate entries" $ do
+      let directory' = mergeEntries directory [entry2]
+      dEntries directory' `shouldBe` [entry1, entry2]
+    it "keeps first appearance of duplicates" $ do
+      let directory' = mergeEntries directory [entry2, entry1]
+      dEntries directory' `shouldBe` [entry1, entry2]

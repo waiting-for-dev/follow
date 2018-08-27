@@ -26,9 +26,11 @@ module Follow
   , applyMiddlewares
   , applySteps
   , emptyDirectory
+  , mergeEntries
   ) where
 
 import           Data.Foldable (foldlM)
+import           Data.List     (nub)
 import           Follow.Types  (Digester, Directory (..), Entry (..),
                                 FetchError, FetchFeedError, Fetched, Fetcher,
                                 Middleware, Recipe (..), Result, Step,
@@ -56,11 +58,13 @@ applySteps = foldlM applyStep
   where
     applyStep :: Directory -> Step -> Result Directory
     applyStep directory (fetched, middlewares) =
-      applyMiddlewares middlewares . concatEntries directory <$> fetched
+      applyMiddlewares middlewares . mergeEntries directory <$> fetched
 
 -- | Creates a directory with given subject and no entries.
 emptyDirectory :: Subject -> Directory
 emptyDirectory s = Directory {dSubject = s, dEntries = mempty}
 
-concatEntries :: Directory -> [Entry] -> Directory
-concatEntries d e = d {dEntries = dEntries d ++ e}
+-- | Merges a list of entries into a Directory, keeping only first
+-- appearance of duplicates.
+mergeEntries :: Directory -> [Entry] -> Directory
+mergeEntries d e = d {dEntries = nub $ dEntries d ++ e}
