@@ -2,18 +2,44 @@
 
 module FollowSpec where
 
-import           Control.Monad.Except (runExceptT)
+import           Control.Monad.Except (runExceptT, throwError)
 import           Data.Either          (fromRight)
 import           Data.Text            (Text)
 import qualified Data.Text            as T (concat)
 import           Follow
-import           Follow.Types         (Digester, Directory (..), Fetched,
-                                       Middleware, Recipe (..), Result (..),
-                                       Subject (..))
+import           Follow.Types         (Digester, Directory (..),
+                                       FetchError (..), FetchFeedError (..),
+                                       Fetched, Middleware, Recipe (..),
+                                       Result (..), Subject (..))
 import           Test.Hspec
 
 spec :: Spec
 spec = do
+  describe ".buildDirectory" $ do
+    let subject = Subject "Title" "Description" ["tag"]
+    it "populates Directory Entries out of given fetcher" $ do
+      let entries =
+            [ Entry
+                (Just "http://url.com")
+                (Just "123")
+                (Just "Title")
+                (Just "Description")
+                Nothing
+            ]
+      let fetched = return entries :: Fetched
+      let directory = buildDirectory fetched subject
+      fetchedEntries <- runExceptT (runResult $ fmap dEntries directory)
+      fromRight [] fetchedEntries `shouldBe` entries
+    it "associates given subject with the Directory" $ do
+      let fetched = return [] :: Fetched
+      let directory = buildDirectory fetched subject
+      fetchedTitle <-
+        runExceptT (runResult $ fmap sTitle (fmap dSubject directory))
+      fromRight "" fetchedTitle `shouldBe` "Title"
+    it "returns back any error from the fetcher" $ do
+      let fetched = (throwError $ FetchFeedError URLWrongFormat) :: Fetched
+      result <- runExceptT (runResult $ buildDirectory fetched subject)
+      show result `shouldBe` "Left (FetchFeedError URLWrongFormat)"
   describe ".process" $ do
     it "fetches, applies middlewares and digests using given strategies" $ do
       let subject = Subject "Title" "Description" ["tag"]
