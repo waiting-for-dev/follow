@@ -14,6 +14,7 @@ module Follow.Types
   , Recipe(..)
   , Subject(..)
   , Entry(..)
+  , EntryGetter
   , Directory(..)
   , Result(..)
   , Fetcher
@@ -50,6 +51,10 @@ data Entry = Entry
   , eDescription :: Maybe Text -- ^ Description.
   , eAuthor      :: Maybe Text -- ^ Author.
   } deriving (Eq, Show)
+
+-- | Function that returns a field from an `Entry`. They are the -
+-- automatically generated methods for the `Entry` record.
+type EntryGetter a = Entry -> Maybe a
 
 -- | Gathering of `Item` published for some `Subject`.
 data Directory = Directory

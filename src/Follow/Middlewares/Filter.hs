@@ -18,7 +18,6 @@ apply (eTitle `equalP` "Some title") d
 -}
 module Follow.Middlewares.Filter
   ( apply
-  , Getter
   , Predicate
   , equalP
   , infixP

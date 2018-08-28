@@ -72,7 +72,7 @@ is actually desired. A `Middleware` is a function `Directory ->
 Directory` which purpose is exactly that.
 
 The aim of `Follow` is to provide some common middlewares. For now,
-just a middleware to filter entries is provided.
+there are two middlewares to filter and sort entries, respectively.
 
 ```haskell
 import qualified Follow.Middlewares.Filter as Filter
