@@ -13,9 +13,11 @@ module Follow.Fetchers.Feed.Internal
   , parseFeed
   ) where
 
+import           Control.Monad        (join)
 import           Control.Monad.Except (throwError)
 import qualified Data.ByteString      as BS (ByteString)
 import qualified Data.ByteString.Lazy as BL (ByteString)
+import           Data.Time            (UTCTime)
 import           Follow.Types         (Entry (..), FetchError (..),
                                        FetchFeedError (..), Result (..))
 import qualified Network.HTTP.Req     as R (GET (..), HttpException, MonadHttp,
@@ -26,7 +28,8 @@ import qualified Network.HTTP.Req     as R (GET (..), HttpException, MonadHttp,
 import           Text.Feed.Import     as F (parseFeedSource)
 import           Text.Feed.Query      as F (feedItems, getItemAuthor,
                                             getItemDescription, getItemId,
-                                            getItemLink, getItemTitle)
+                                            getItemLink, getItemPublishDate,
+                                            getItemTitle)
 import           Text.Feed.Types      as F (Feed, Item)
 
 type Url s = (R.Url s, R.Option s)
@@ -65,6 +68,7 @@ feedToEntries feed = itemToEntry <$> F.feedItems feed
         (F.getItemTitle item)
         (F.getItemDescription item)
         (F.getItemAuthor item)
+        (join $ F.getItemPublishDate item)
 
 -- | Declares how to handle request errors.
 instance R.MonadHttp Result where

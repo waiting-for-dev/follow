@@ -13,7 +13,7 @@ import           Follow.Types         (Digester, Directory (..), Entry (..),
                                        Result (..), Subject (..))
 import           Test.Hspec
 
-entryBuilder title = Entry Nothing Nothing (Just title) Nothing Nothing
+entryBuilder title = Entry Nothing Nothing (Just title) Nothing Nothing Nothing
 
 fetcherBuilder title = (return $ [entryBuilder title]) :: Fetched
 
@@ -33,6 +33,7 @@ spec = do
                 (Just "123")
                 (Just "Title")
                 (Just "Description")
+                Nothing
                 Nothing
             ]
       let fetched = return entries :: Fetched

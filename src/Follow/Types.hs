@@ -31,6 +31,7 @@ import           Control.Monad.Except   (ExceptT, MonadError, catchError,
 import           Control.Monad.IO.Class (MonadIO)
 import           Data.Dynamic           (Dynamic)
 import           Data.Text              (Text)
+import           Data.Time              (UTCTime)
 import qualified Network.HTTP.Req       as R (HttpException)
 import           Text.Parsec            (ParseError, Parsec)
 
@@ -50,6 +51,7 @@ data Entry = Entry
   , eTitle       :: Maybe Text -- ^ Title.
   , eDescription :: Maybe Text -- ^ Description.
   , eAuthor      :: Maybe Text -- ^ Author.
+  , ePublishDate :: Maybe UTCTime -- ^ Item publish date.
   } deriving (Eq, Show)
 
 -- | Function that returns a field from an `Entry`. They are the -

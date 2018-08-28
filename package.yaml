@@ -29,6 +29,7 @@ dependencies:
 - http-client
 - req
 - mtl
+- time
 
 library:
   source-dirs: src

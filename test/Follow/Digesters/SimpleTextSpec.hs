@@ -20,6 +20,7 @@ spec =
               (Just "Entry Title")
               (Just "Entry Description")
               (Just "Entry Author")
+              Nothing
           ]
     let directory = Directory subject entries
     let output = digest directory

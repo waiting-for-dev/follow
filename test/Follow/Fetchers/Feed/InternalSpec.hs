@@ -6,6 +6,7 @@ import qualified Data.ByteString               as BS (ByteString)
 import           Data.Dynamic                  (toDyn)
 import           Data.Either                   (isRight)
 import           Data.Maybe                    (fromJust, isNothing)
+import           Data.Time                     (UTCTime (..))
 import           Follow.Fetchers.Feed.Internal
 import           Follow.Types                  (Entry (..))
 import qualified Network.HTTP.Req              as R (parseUrl)
@@ -38,3 +39,7 @@ spec = do
       it "sets item author as entry author" $ \feed -> do
         let entry = head $ feedToEntries feed
         eAuthor entry `shouldBe` Just "Joe Doe"
+      it "sets item publish date as entry publish date" $ \feed -> do
+        let entry = head $ feedToEntries feed
+        ePublishDate entry `shouldBe`
+          Just (read "2009-09-06 16:20:00 UTC" :: UTCTime)
