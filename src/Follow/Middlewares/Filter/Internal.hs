@@ -9,6 +9,8 @@ apply the filter middleware to a directory.
 module Follow.Middlewares.Filter.Internal
   ( Predicate
   , equalP
+  , lessP
+  , greaterP
   , infixP
   , prefixP
   , suffixP
@@ -31,23 +33,35 @@ type Predicate = Entry -> Bool
 equalP :: Eq a => EntryGetter a -> a -> Predicate
 equalP = liftP (==)
 
+-- | Builds a predicate which takes the field returned by the getter
+-- and compares whether it is less than given value. It returns `False` when
+-- field is `Nothing`.
+lessP :: Ord a => EntryGetter a -> a -> Predicate
+lessP = liftP (<)
+
+-- | Builds a predicate which takes the field returned by the getter
+-- and compares whether it is greater than given value. It returns `False` when
+-- field is `Nothing`.
+greaterP :: Ord a => EntryGetter a -> a -> Predicate
+greaterP = liftP (>)
+
 -- | Builds a predicate which takes given value and checks whether it
 -- is an infix for the field returned by given getter. It returns `False`
 -- when field is `Nothing`.
-infixP :: EntryGetter Text -> Text -> Predicate
-infixP = liftP T.isInfixOf
+infixP :: Text -> EntryGetter Text -> Predicate
+infixP = flip $ liftP (flip T.isInfixOf)
 
 -- | Builds a predicate which takes given value and checks whether it
 -- is a prefix for the field returned by given getter. It returns `False`
 -- when field is `Nothing`.
-prefixP :: EntryGetter Text -> Text -> Predicate
-prefixP = liftP T.isPrefixOf
+prefixP :: Text -> EntryGetter Text -> Predicate
+prefixP = flip $ liftP (flip T.isPrefixOf)
 
 -- | Builds a predicate which takes given value and checks whether it
 -- is a suffix for the field returned by given getter. It returns `False`
 -- when field is `Nothing`.
-suffixP :: EntryGetter Text -> Text -> Predicate
-suffixP = liftP T.isSuffixOf
+suffixP :: Text -> EntryGetter Text -> Predicate
+suffixP = flip $ liftP (flip T.isSuffixOf)
 
 -- | Builds a predicate which combines with a logical and given
 -- predicates.
@@ -63,8 +77,8 @@ orP = liftB (||)
 notP :: Predicate -> Predicate
 notP p entry = not $ p entry
 
-liftP :: (b -> a -> Bool) -> EntryGetter a -> b -> Predicate
-liftP p getter x entry = maybe False (p x) (getter entry)
+liftP :: (a -> b -> Bool) -> EntryGetter a -> b -> Predicate
+liftP p getter x entry = maybe False (`p` x) (getter entry)
 
 liftB :: (Bool -> Bool -> Bool) -> Predicate -> Predicate -> Predicate
 liftB f p q entry = p entry `f` q entry

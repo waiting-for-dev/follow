@@ -35,13 +35,13 @@ spec = do
               Nothing
               Nothing
               Nothing
-      (eURI `infixP` "url") entry `shouldBe` True
+      ("url" `infixP` eURI) entry `shouldBe` True
     it "returns false when needle is not contained" $ do
       let entry = Entry Nothing (Just "GUID1") Nothing Nothing Nothing Nothing
-      (eGUID `infixP` "NO") entry `shouldBe` False
+      ("NO" `infixP` eGUID) entry `shouldBe` False
     it "returns false when field is Nothing" $ do
       let entry = Entry Nothing Nothing Nothing Nothing Nothing Nothing
-      (eTitle `infixP` "Title") entry `shouldBe` False
+      ("Title" `infixP` eTitle) entry `shouldBe` False
   describe ".prefixP" $ do
     it "returns true when needle is prefix" $ do
       let entry =
@@ -52,13 +52,13 @@ spec = do
               Nothing
               Nothing
               Nothing
-      (eURI `prefixP` "http://") entry `shouldBe` True
+      ("http://" `prefixP` eURI) entry `shouldBe` True
     it "returns false when needle is not prefix" $ do
       let entry = Entry Nothing (Just "GUID1") Nothing Nothing Nothing Nothing
-      (eGUID `prefixP` "NO") entry `shouldBe` False
+      ("NO" `prefixP` eGUID) entry `shouldBe` False
     it "returns false when field is Nothing" $ do
       let entry = Entry Nothing Nothing Nothing Nothing Nothing Nothing
-      (eTitle `prefixP` "Title") entry `shouldBe` False
+      ("Title" `prefixP` eTitle) entry `shouldBe` False
   describe ".suffixP" $ do
     it "returns true when needle is suffix" $ do
       let entry =
@@ -69,61 +69,81 @@ spec = do
               Nothing
               Nothing
               Nothing
-      (eURI `suffixP` ".com") entry `shouldBe` True
+      (".com" `suffixP` eURI) entry `shouldBe` True
     it "returns false when needle is not suffix" $ do
       let entry = Entry Nothing (Just "GUID1") Nothing Nothing Nothing Nothing
-      (eGUID `suffixP` "NO") entry `shouldBe` False
+      ("NO" `suffixP` eGUID) entry `shouldBe` False
     it "returns false when field is Nothing" $ do
       let entry = Entry Nothing Nothing Nothing Nothing Nothing Nothing
-      (eTitle `suffixP` "Title") entry `shouldBe` False
+      ("Title" `suffixP` eTitle) entry `shouldBe` False
+  describe ".lessP" $ do
+    it "returns true when item is lesser" $ do
+      let entry = Entry Nothing Nothing (Just "A") Nothing Nothing Nothing
+      (eTitle `lessP` "B") entry `shouldBe` True
+    it "returns false when item is not lesser" $ do
+      let entry = Entry Nothing Nothing (Just "C") Nothing Nothing Nothing
+      (eTitle `lessP` "B") entry `shouldBe` False
+    it "returns false when item is equal" $ do
+      let entry = Entry Nothing Nothing (Just "A") Nothing Nothing Nothing
+      (eTitle `lessP` "A") entry `shouldBe` False
+  describe ".greaterP" $ do
+    it "returns true when item is greater" $ do
+      let entry = Entry Nothing Nothing (Just "C") Nothing Nothing Nothing
+      (eTitle `greaterP` "A") entry `shouldBe` True
+    it "returns false when item is not greater" $ do
+      let entry = Entry Nothing Nothing (Just "A") Nothing Nothing Nothing
+      (eTitle `greaterP` "B") entry `shouldBe` False
+    it "returns false when item is equal" $ do
+      let entry = Entry Nothing Nothing (Just "A") Nothing Nothing Nothing
+      (eTitle `greaterP` "A") entry `shouldBe` False
   describe ".andP" $ do
     it "returns true when both predicates apply" $ do
       let entry =
             Entry Nothing Nothing (Just "The Title") Nothing Nothing Nothing
-      ((eTitle `prefixP` "The") `andP` (eTitle `suffixP` "Title")) entry `shouldBe`
+      (("The" `prefixP` eTitle) `andP` ("Title" `suffixP` eTitle)) entry `shouldBe`
         True
     it "returns false when first predicates fails" $ do
       let entry =
             Entry Nothing Nothing (Just "The Title") Nothing Nothing Nothing
-      ((eTitle `prefixP` "NO") `andP` (eTitle `suffixP` "Title")) entry `shouldBe`
+      (("NO" `prefixP` eTitle) `andP` ("Title" `suffixP` eTitle)) entry `shouldBe`
         False
     it "returns false when second predicates fails" $ do
       let entry =
             Entry Nothing Nothing (Just "The Title") Nothing Nothing Nothing
-      ((eTitle `prefixP` "The") `andP` (eTitle `suffixP` "NO")) entry `shouldBe`
+      (("The" `prefixP` eTitle) `andP` ("NO" `suffixP` eTitle)) entry `shouldBe`
         False
     it "returns false when both predicates fail" $ do
       let entry =
             Entry Nothing Nothing (Just "The Title") Nothing Nothing Nothing
-      ((eTitle `prefixP` "NO") `andP` (eTitle `suffixP` "NEITHER")) entry `shouldBe`
+      (("NO" `prefixP` eTitle) `andP` ("NEITHER" `suffixP` eTitle)) entry `shouldBe`
         False
   describe ".orP" $ do
     it "returns true when both predicates apply" $ do
       let entry =
             Entry Nothing Nothing (Just "The Title") Nothing Nothing Nothing
-      ((eTitle `prefixP` "The") `orP` (eTitle `suffixP` "Title")) entry `shouldBe`
+      (("The" `prefixP` eTitle) `orP` ("Title" `suffixP` eTitle)) entry `shouldBe`
         True
     it "returns true when first predicates applies" $ do
       let entry =
             Entry Nothing Nothing (Just "The Title") Nothing Nothing Nothing
-      ((eTitle `prefixP` "The") `orP` (eTitle `suffixP` "NO")) entry `shouldBe`
+      (("The" `prefixP` eTitle) `orP` ("NO" `suffixP` eTitle)) entry `shouldBe`
         True
     it "returns true when second predicates applies" $ do
       let entry =
             Entry Nothing Nothing (Just "The Title") Nothing Nothing Nothing
-      ((eTitle `prefixP` "NO") `orP` (eTitle `suffixP` "Title")) entry `shouldBe`
+      (("NO" `prefixP` eTitle) `orP` ("Title" `suffixP` eTitle)) entry `shouldBe`
         True
     it "returns false when both predicates fail" $ do
       let entry =
             Entry Nothing Nothing (Just "The Title") Nothing Nothing Nothing
-      ((eTitle `prefixP` "NO") `orP` (eTitle `suffixP` "NEITHER")) entry `shouldBe`
+      (("NO" `prefixP` eTitle) `orP` ("NEITHER" `suffixP` eTitle)) entry `shouldBe`
         False
   describe ".notP" $ do
     it "returns true when predicate does not apply" $ do
       let entry =
             Entry Nothing Nothing (Just "The Title") Nothing Nothing Nothing
-      notP (eTitle `prefixP` "NO") entry `shouldBe` True
+      notP ("NO" `prefixP` eTitle) entry `shouldBe` True
     it "returns false when predicate applies" $ do
       let entry =
             Entry Nothing Nothing (Just "The Title") Nothing Nothing Nothing
-      notP (eTitle `prefixP` "The") entry `shouldBe` False
+      notP ("The" `prefixP` eTitle) entry `shouldBe` False

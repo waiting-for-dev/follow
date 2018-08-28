@@ -79,7 +79,7 @@ import qualified Follow.Middlewares.Filter as Filter
 
 haskellFilteredDirectory :: Result Directory
 haskellFilteredDirectory =
-  Filter.apply (eTitle `infixP` "Haskell") <$> haskellDirectory
+  Filter.apply ("Haskell" `infixP` eTitle) <$> haskellDirectory
 ```
 
 ## Digesters
