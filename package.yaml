@@ -59,3 +59,4 @@ tests:
 
 data-files:
   - test/Fixtures/Subject
+  - test/Fixtures/rss.xml
