@@ -59,6 +59,9 @@ spec = do
     it "returns false when item is equal" $ do
       let entry = _entry {eTitle = Just "A"}
       (eTitle `lessP` "A") entry `shouldBe` False
+    it "returns false when item is Nothing" $ do
+      let entry = _entry {eTitle = Nothing}
+      (eTitle `lessP` "A") entry `shouldBe` False
   describe ".greaterP" $ do
     it "returns true when item is greater" $ do
       let entry = _entry {eTitle = Just "C"}
@@ -68,6 +71,9 @@ spec = do
       (eTitle `greaterP` "B") entry `shouldBe` False
     it "returns false when item is equal" $ do
       let entry = _entry {eTitle = Just "A"}
+      (eTitle `greaterP` "A") entry `shouldBe` False
+    it "returns false when item is Nothing" $ do
+      let entry = _entry {eTitle = Nothing}
       (eTitle `greaterP` "A") entry `shouldBe` False
   describe ".andP" $ do
     it "returns true when both predicates apply" $ do
