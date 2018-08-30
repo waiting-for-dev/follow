@@ -12,7 +12,7 @@ module Follow.Digesters.SimpleText
 
 import           Data.Maybe   (fromMaybe)
 import           Data.Text    (Text)
-import qualified Data.Text    as T (concat, intercalate, replicate)
+import qualified Data.Text    as T (concat, intercalate, pack, replicate)
 import           Follow.Types (Digester, Directory (..), Entry (..),
                                Subject (..))
 
@@ -50,10 +50,16 @@ digestEntries entries = T.intercalate entrySeparator $ map digestEntry entries
           entryTitle = eTitle entry
           entryDescription = eDescription entry
           entryAuthor = eAuthor entry
+          entryPublishDate = ePublishDate entry
        in T.intercalate
             emptyLine
             (digestEntryItem <$>
-             [entryURI, entryTitle, entryDescription, entryAuthor])
+             [ entryURI
+             , entryTitle
+             , T.pack . show <$> entryPublishDate
+             , entryDescription
+             , entryAuthor
+             ])
 
 emptyLine :: Text
 emptyLine = "\n\n\n"
