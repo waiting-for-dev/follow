@@ -3,18 +3,16 @@
 module Follow.Middlewares.FilterSpec where
 
 import           Follow.Middlewares.Filter
-import           Follow.Types              (Directory (..), Entry (..),
-                                            Middleware, Subject (..))
+import           Follow.Types              (Directory (..), Entry (..))
+import           Helpers.Factories
 import           Test.Hspec
 
 spec :: Spec
 spec =
   describe ".apply" $ do
-    let buildEntry title =
-          Entry Nothing Nothing (Just title) Nothing Nothing Nothing
     it "filter entries according to given predicate" $ do
-      let subject = Subject "Title" "Description" ["tag"]
-      let directory = Directory subject [buildEntry "A", buildEntry "B"]
+      let entry1 = _entry {eTitle = Just "A"}
+      let entry2 = _entry {eTitle = Just "B"}
+      let directory = Directory _subject [entry1, entry2]
       let directory' = apply (eTitle `equalP` "A") directory
-      (length $ dEntries directory') `shouldBe` 1
-      eTitle (head $ dEntries directory') `shouldBe` Just "A"
+      dEntries directory' `shouldBe` [entry1]

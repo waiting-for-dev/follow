@@ -3,17 +3,16 @@
 module Follow.Middlewares.SortSpec where
 
 import           Follow.Middlewares.Sort
-import           Follow.Types            (Directory (..), Entry (..),
-                                          Subject (..))
+import           Follow.Types            (Directory (..), Entry (..))
+import           Helpers.Factories
 import           Test.Hspec
 
 spec :: Spec
 spec = do
   describe ".apply" $ do
     it "sorts by given field getter" $ do
-      let subject = Subject "Title" "Description" ["tag"]
-      let entry1 = Entry Nothing Nothing (Just "DEF") Nothing Nothing Nothing
-      let entry2 = Entry Nothing Nothing (Just "ABC") Nothing Nothing Nothing
-      let directory = Directory subject [entry1, entry2]
+      let entry1 = _entry {eTitle = Just "DEF"}
+      let entry2 = _entry {eTitle = Just "ABC"}
+      let directory = Directory _subject [entry1, entry2]
       let sortedDirectory = apply (byGetter eTitle) directory
       dEntries sortedDirectory `shouldBe` [entry2, entry1]
