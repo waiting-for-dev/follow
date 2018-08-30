@@ -76,43 +76,36 @@ spec = do
       let entry = _entry {eTitle = Nothing}
       (eTitle `greaterP` "A") entry `shouldBe` False
   describe ".andP" $ do
+    let entry = _entry {eTitle = Just "The Title"}
     it "returns true when both predicates apply" $ do
-      let entry = _entry {eTitle = Just "The Title"}
       (("The" `prefixP` eTitle) `andP` ("Title" `suffixP` eTitle)) entry `shouldBe`
         True
     it "returns false when first predicates fails" $ do
-      let entry = _entry {eTitle = Just "The Title"}
       (("NO" `prefixP` eTitle) `andP` ("Title" `suffixP` eTitle)) entry `shouldBe`
         False
     it "returns false when second predicates fails" $ do
-      let entry = _entry {eTitle = Just "The Title"}
       (("The" `prefixP` eTitle) `andP` ("NO" `suffixP` eTitle)) entry `shouldBe`
         False
     it "returns false when both predicates fail" $ do
-      let entry = _entry {eTitle = Just "The Title"}
       (("NO" `prefixP` eTitle) `andP` ("NEITHER" `suffixP` eTitle)) entry `shouldBe`
         False
   describe ".orP" $ do
+    let entry = _entry {eTitle = Just "The Title"}
     it "returns true when both predicates apply" $ do
-      let entry = _entry {eTitle = Just "The Title"}
       (("The" `prefixP` eTitle) `orP` ("Title" `suffixP` eTitle)) entry `shouldBe`
         True
     it "returns true when first predicates applies" $ do
-      let entry = _entry {eTitle = Just "The Title"}
       (("The" `prefixP` eTitle) `orP` ("NO" `suffixP` eTitle)) entry `shouldBe`
         True
     it "returns true when second predicates applies" $ do
-      let entry = _entry {eTitle = Just "The Title"}
       (("NO" `prefixP` eTitle) `orP` ("Title" `suffixP` eTitle)) entry `shouldBe`
         True
     it "returns false when both predicates fail" $ do
-      let entry = _entry {eTitle = Just "The Title"}
       (("NO" `prefixP` eTitle) `orP` ("NEITHER" `suffixP` eTitle)) entry `shouldBe`
         False
   describe ".notP" $ do
+    let entry = _entry {eTitle = Just "The Title"}
     it "returns true when predicate does not apply" $ do
-      let entry = _entry {eTitle = Just "The Title"}
       notP ("NO" `prefixP` eTitle) entry `shouldBe` True
     it "returns false when predicate applies" $ do
-      let entry = _entry {eTitle = Just "The Title"}
       notP ("The" `prefixP` eTitle) entry `shouldBe` False
