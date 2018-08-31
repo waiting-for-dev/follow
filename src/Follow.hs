@@ -14,6 +14,7 @@ module Follow
   , Entry(..)
   , Directory(..)
   , Result(..)
+  , unwrapResult
   , Fetcher
   , Step
   , Fetched
@@ -34,7 +35,7 @@ import           Data.List     (nub)
 import           Follow.Types  (Digester, Directory (..), Entry (..),
                                 FetchError, FetchFeedError, Fetched, Fetcher,
                                 Middleware, Recipe (..), Result, Step,
-                                Subject (..))
+                                Subject (..), unwrapResult)
 
 -- | Builds a directory from the specification stored in a recipe
 directoryFromRecipe :: Recipe -> Result Directory

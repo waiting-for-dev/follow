@@ -9,7 +9,7 @@ module Follow.Fetchers.Feed
   ( fetch
   ) where
 
-import           Control.Monad.Except          (liftEither, runExceptT)
+import           Control.Monad.Except          (liftEither)
 import qualified Data.ByteString               as BS (ByteString)
 import           Follow.Fetchers.Feed.Internal
 import           Follow.Types                  (Fetcher)

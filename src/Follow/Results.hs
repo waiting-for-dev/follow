@@ -10,10 +10,9 @@ module Follow.Results
   ( WritableToFile(..)
   ) where
 
-import           Control.Monad.Except (runExceptT)
-import           Data.Text            (Text)
-import           Data.Text.IO         as T (writeFile)
-import           Follow.Types         (Result (..))
+import           Data.Text    (Text)
+import           Data.Text.IO as T (writeFile)
+import           Follow.Types (Result, unwrapResult)
 
 -- | Something that can be written to a file.
 class WritableToFile a where
@@ -28,7 +27,7 @@ instance WritableToFile Text where
 -- it.
 instance WritableToFile a => WritableToFile (Result a) where
   writeToFile path result = do
-    result' <- runExceptT $ runResult result
+    result' <- unwrapResult result
     case result' of
       Left error -> return ()
       Right x    -> writeToFile path x

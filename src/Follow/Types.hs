@@ -17,6 +17,7 @@ module Follow.Types
   , EntryGetter
   , Directory(..)
   , Result(..)
+  , unwrapResult
   , Fetcher
   , Step
   , Fetched
@@ -27,7 +28,7 @@ module Follow.Types
   ) where
 
 import           Control.Monad.Except   (ExceptT, MonadError, catchError,
-                                         throwError)
+                                         runExceptT, throwError)
 import           Control.Monad.IO.Class (MonadIO)
 import           Data.Dynamic           (Dynamic)
 import           Data.Text              (Text)
@@ -87,6 +88,11 @@ type ArgumentsDSL = [(ArgumentName, Parse Dynamic)]
 newtype Result a = Result
   { runResult :: ExceptT FetchError IO a
   } deriving (Functor, Applicative, Monad, MonadIO, MonadError FetchError)
+
+-- | Unwraps a `Result` into its bare monad components. It is just a
+-- helper to avoid having to call both `runResult` and `runExceptT`.
+unwrapResult :: Result a -> IO (Either FetchError a)
+unwrapResult = runExceptT . runResult
 
 -- | Function to fetch a list of `Entry` from the outside world. See `Fetched`.
 type Fetcher arguments = arguments -> Fetched
