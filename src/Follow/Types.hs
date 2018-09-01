@@ -101,15 +101,15 @@ type Fetcher arguments = arguments -> Fetched
 type Fetched = Result [Entry]
 
 -- | An error returned by a `Fetcher`.
-newtype FetchError =
-  FetchFeedError FetchFeedError
+data FetchError
+  = URLWrongFormat
+  | ResponseError R.HttpException
+  | FetchFeedError FetchFeedError
   deriving (Show)
 
 -- | Errors returned by feed fetcher strategy. See `Follow.Fetchers.Feed`.
-data FetchFeedError
-  = URLWrongFormat
-  | FeedWrongFormat
-  | ResponseError R.HttpException
+data FetchFeedError =
+  FeedWrongFormat
   deriving (Show)
 
 -- | Middlewares are strategies to modify a directory. They are used

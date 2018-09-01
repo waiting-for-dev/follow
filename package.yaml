@@ -30,6 +30,8 @@ dependencies:
 - req
 - mtl
 - time
+- hxt
+- HandsomeSoup
 
 library:
   source-dirs: src
@@ -60,3 +62,4 @@ tests:
 data-files:
   - test/Fixtures/Subject
   - test/Fixtures/rss.xml
+  - test/Fixtures/webscraping.html

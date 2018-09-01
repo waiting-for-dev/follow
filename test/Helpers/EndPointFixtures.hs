@@ -4,6 +4,7 @@ module Helpers.EndPointFixtures
   ( simpleEndPoint
   , endPointWithStatus
   , feedEndPoint
+  , webScrapingEndPoint
   , invalidEndPoint
   ) where
 
@@ -20,6 +21,9 @@ endPointWithStatus status =
 
 feedEndPoint :: BS.ByteString
 feedEndPoint = "http://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml"
+
+webScrapingEndPoint :: BS.ByteString
+webScrapingEndPoint = "https://www.nytimes.com/section/world"
 
 invalidEndPoint :: BS.ByteString
 invalidEndPoint = "invalidurl"

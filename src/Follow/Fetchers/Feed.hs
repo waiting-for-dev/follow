@@ -13,6 +13,7 @@ import           Control.Monad.Except          (liftEither)
 import qualified Data.ByteString               as BS (ByteString)
 import           Follow.Fetchers.Feed.Internal
 import           Follow.Types                  (Fetcher)
+import           HTTP.Follow                   (getResponseBody, parseUrl)
 
 -- | The fetcher strategy. Notice that it takes the URL as a
 -- `BS.ByteString`, because URLs can't have characters outside of

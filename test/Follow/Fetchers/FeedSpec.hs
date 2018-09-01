@@ -31,11 +31,11 @@ spec = do
       isInfix `shouldSatisfy` isRight
     it "returns error when URL is not valid" $ do
       result <- unwrapResult $ fetch invalidEndPoint
-      show result `shouldBe` "Left (FetchFeedError URLWrongFormat)"
+      show result `shouldBe` "Left URLWrongFormat"
     it "returns error when response can't be parsed to a feed" $ do
       result <- unwrapResult $ fetch simpleEndPoint
       show result `shouldBe` "Left (FetchFeedError FeedWrongFormat)"
     it "returns the http error when it happens" $ do
-      Left (FetchFeedError (ResponseError (R.VanillaHttpException (H.HttpExceptionRequest _ (H.StatusCodeException response _))))) <-
+      Left (ResponseError (R.VanillaHttpException (H.HttpExceptionRequest _ (H.StatusCodeException response _)))) <-
         unwrapResult $ fetch (endPointWithStatus 404)
       H.responseStatus response `shouldBe` (toEnum 404)

@@ -8,9 +8,8 @@ import           Data.Text            (Text)
 import qualified Data.Text            as T (concat)
 import           Follow
 import           Follow.Types         (Digester, Directory (..), Entry (..),
-                                       FetchError (..), FetchFeedError (..),
-                                       Fetched, Middleware, Recipe (..), Result,
-                                       Subject (..))
+                                       FetchError (..), Fetched, Middleware,
+                                       Recipe (..), Result, Subject (..))
 import           Helpers.Factories
 import           Test.Hspec
 
@@ -34,9 +33,9 @@ spec = do
       fromDirSubject <- unwrapResult $ fmap dSubject directory
       fromRight _subject fromDirSubject `shouldBe` subject
     it "returns back any error from the fetcher" $ do
-      let fetched = (throwError $ FetchFeedError URLWrongFormat) :: Fetched
+      let fetched = (throwError $ URLWrongFormat) :: Fetched
       result <- unwrapResult $ directoryFromFetched fetched _subject
-      show result `shouldBe` "Left (FetchFeedError URLWrongFormat)"
+      show result `shouldBe` "Left URLWrongFormat"
   describe ".applyMiddlewares" $ do
     it "applies in order given middlewares" $ do
       let directory = emptyDirectory _subject

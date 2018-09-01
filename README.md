@@ -52,7 +52,8 @@ http://hackage.haskell.org/package/transformers-0.5.5.0/docs/Control-Monad-Trans
 wrapping.
 
 Any fetcher can be used, but `Follow` tries to ship with common
-ones. Right now, it only provides a feed fetcher.
+ones. Right now there is a fetcher to take entries from a RSS feed and
+another one to take them scraping a web page.
 
 The function `directoryFromFetched` can be used to glue a subject with
 some fetched content:

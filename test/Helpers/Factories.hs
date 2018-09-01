@@ -6,11 +6,14 @@ module Helpers.Factories
   , _entry
   , _directory
   , _recipe
+  , _selector
   , e2F
   ) where
 
-import           Follow.Types (Directory (..), Entry (..), Fetched, Recipe (..),
-                               Subject (..))
+import           Follow.Fetchers.WebScraping (Selector (..))
+import           Follow.Types                (Directory (..), Entry (..),
+                                              Fetched, Recipe (..),
+                                              Subject (..))
 
 _entry :: Entry
 _entry =
@@ -34,3 +37,14 @@ _recipe :: Recipe
 _recipe = Recipe {rSubject = _subject, rSteps = [], rMiddlewares = []}
 
 e2F entry = return [entry] :: Fetched
+
+_selector :: Selector
+_selector =
+  Selector
+    { selURI = Nothing
+    , selGUID = Nothing
+    , selTitle = Nothing
+    , selDescription = Nothing
+    , selAuthor = Nothing
+    , selPublishDate = Nothing
+    }
