@@ -146,5 +146,5 @@ You can combine the function `directoryFromRecipe` and some digester
 to quickly consume a recipe:
 
 ```haskell
-SimpleText.digest $ directoryFromRecipe recipe
+SimpleText.digest <$> directoryFromRecipe recipe
 ```
