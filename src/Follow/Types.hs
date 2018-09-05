@@ -28,7 +28,7 @@ module Follow.Types
   ) where
 
 import           Control.Monad.Except   (ExceptT, MonadError, catchError,
-                                         runExceptT, throwError)
+                                         runExceptT)
 import           Control.Monad.IO.Class (MonadIO)
 import           Data.Dynamic           (Dynamic)
 import           Data.Text              (Text)
@@ -105,6 +105,8 @@ data FetchError
   = URLWrongFormat
   | ResponseError R.HttpException
   | FetchFeedError FetchFeedError
+  | TokenNotFound
+  | TokenDecodingError
   deriving (Show)
 
 -- | Errors returned by feed fetcher strategy. See `Follow.Fetchers.Feed`.

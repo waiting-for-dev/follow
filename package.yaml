@@ -32,13 +32,15 @@ dependencies:
 - time
 - hxt
 - HandsomeSoup
+- aeson
+- unordered-containers
 
 library:
   source-dirs: src
 
 executables:
-  follow-exe:
-    main:                Main.hs
+  follow_pocket_auth:
+    main:                PocketAuth.hs
     source-dirs:         app
     ghc-options:
     - -threaded

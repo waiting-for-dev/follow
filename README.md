@@ -52,8 +52,11 @@ http://hackage.haskell.org/package/transformers-0.5.5.0/docs/Control-Monad-Trans
 wrapping.
 
 Any fetcher can be used, but `Follow` tries to ship with common
-ones. Right now there is a fetcher to take entries from a RSS feed and
-another one to take them scraping a web page.
+ones. Right now there are two fetchers available:
+
+- [Feed](src/Follow/Fetchers/Feed.hs): Take entries from a RSS or Atom feed.
+- [Web Scraping](src/Follow/Fetchers/WebScraping.hs): Take entries
+  scraping the HTML of a web page.
 
 The function `directoryFromFetched` can be used to glue a subject with
 some fetched content:
@@ -73,7 +76,11 @@ is actually desired. A `Middleware` is a function `Directory ->
 Directory` which purpose is exactly that.
 
 The aim of `Follow` is to provide some common middlewares. For now,
-there are two middlewares to filter and sort entries, respectively.
+there are two middlewares:
+
+- [Filter](src/Follow/Middlewares/Filter.hs): Filter entries according
+  some predicate.
+- [Sort](src/Follow/Middlewares/Sort.hs): Sort entries.
 
 ```haskell
 import qualified Follow.Middlewares.Filter as Filter
@@ -89,8 +96,13 @@ Once you have your distillate content, you need some way to consume
 it. A `Digester` is a function `Directory -> a` that transform a
 `Directory` into anything that can be consumed by an end user.
 
-As before, `Follow` wants to provide useful ones out of the box. Right
-now, however, it only ships with a simple text digester.
+As before, `Follow` aims to provide useful ones out of the box. Right
+now two of them are provided:
+
+- [Simple Text](src/Follow/Digesters/SimpleText.hs): Simple textual
+  representation of the directory.
+- [Pocket](src/Follow/Digesters/Pocket.hs): Send fetched links to
+  [Pocket](https://getpocket.com).
 
 ```haskell
 import Follow.Digesters.SimpleText
