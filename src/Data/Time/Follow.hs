@@ -11,7 +11,7 @@ module Data.Time.Follow
 import           Control.Applicative ((<|>))
 import           Data.Text           (Text)
 import qualified Data.Text           as T (unpack)
-import           Data.Time           (UTCTime, defaultTimeLocale, formatTime,
+import           Data.Time           (ParseTime, defaultTimeLocale, formatTime,
                                       iso8601DateFormat, parseTimeM,
                                       rfc822DateFormat)
 
@@ -25,7 +25,7 @@ import           Data.Time           (UTCTime, defaultTimeLocale, formatTime,
 --   2018-01-01T12:35.001000+0100
 --   - rfc822: Mon, 01 Jan 2018 12:35:00 +0100
 --   - epoch: 1514810100
-parseTimeGuess :: Text -> Maybe UTCTime
+parseTimeGuess :: ParseTime t => Text -> Maybe t
 parseTimeGuess string =
   let formats =
         [ iso8601DateFormat Nothing

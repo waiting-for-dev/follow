@@ -3,7 +3,7 @@
 module Follow.Digesters.SimpleTextSpec where
 
 import qualified Data.Text                   as T (isInfixOf)
-import           Data.Time                   (UTCTime)
+import           Data.Time                   (LocalTime)
 import           Follow.Digesters.SimpleText
 import           Follow.Types                (Directory (..), Entry (..),
                                               Subject (..))
@@ -21,7 +21,7 @@ spec =
               (Just "Entry Title")
               (Just "Entry Description")
               (Just "Entry Author")
-              (Just (read "2009-09-06 16:20:00 UTC" :: UTCTime))
+              (Just (read "2009-09-06 16:20:00" :: LocalTime))
           ]
     let directory = Directory subject entries
     let output = digest directory
@@ -39,4 +39,4 @@ spec =
     it "adds each entry author" $ do
       "Entry Author" `shouldSatisfy` (isInfixOf' output)
     it "adds each entry publish date" $ do
-      "2009-09-06 16:20:00 UTC" `shouldSatisfy` (isInfixOf' output)
+      "2009-09-06 16:20:00" `shouldSatisfy` (isInfixOf' output)
