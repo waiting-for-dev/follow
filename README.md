@@ -81,6 +81,8 @@ there are two middlewares:
 - [Filter](src/Follow/Middlewares/Filter.hs): Filter entries according
   some predicate.
 - [Sort](src/Follow/Middlewares/Sort.hs): Sort entries.
+- [Decode](src/Follow/Middlewares/Decode.hs): Decodes entries from
+  UTF8 or other encodings.
 
 ```haskell
 import qualified Follow.Middlewares.Filter as Filter
