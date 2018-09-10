@@ -13,13 +13,13 @@ module Follow
   , Subject(..)
   , Entry(..)
   , Directory(..)
-  , Result(..)
-  , unwrapResult
-  , Fetcher
+  --, Result(..)
+  --, unwrapResult
+  --, Fetcher
   , Step
-  , Fetched
-  , FetchError(..)
-  , FetchFeedError(..)
+  --, Fetched
+  --, FetchError(..)
+  --, FetchFeedError(..)
   , Middleware
   , Digester
   , directoryFromRecipe
@@ -30,15 +30,15 @@ module Follow
   , mergeEntries
   ) where
 
-import           Data.Foldable (foldlM)
-import           Data.List     (nub)
-import           Follow.Types  (Digester, Directory (..), Entry (..),
-                                FetchError, FetchFeedError, Fetched, Fetcher,
-                                Middleware, Recipe (..), Result, Step,
-                                Subject (..), unwrapResult)
+import           Control.Monad.Catch (MonadCatch, MonadThrow)
+import           Data.Foldable       (foldlM)
+import           Data.List           (nub)
+import           Follow.Types        (Digester, Directory (..), Entry (..),
+                                      Middleware, Recipe (..), Step,
+                                      Subject (..))
 
 -- | Builds a directory from the specification stored in a recipe
-directoryFromRecipe :: Recipe -> Result Directory
+directoryFromRecipe :: (MonadCatch m, MonadThrow m) => Recipe m -> m Directory
 directoryFromRecipe recipe =
   let Recipe {rSubject = subject, rSteps = steps, rMiddlewares = middlewares} =
         recipe
@@ -46,7 +46,8 @@ directoryFromRecipe recipe =
 
 -- | Helper to build a directory from a subject and a list of fetched
 -- entries.
-directoryFromFetched :: Fetched -> Subject -> Result Directory
+directoryFromFetched ::
+     (MonadThrow m, MonadCatch m) => m [Entry] -> Subject -> m Directory
 directoryFromFetched fetched header = Directory header <$> fetched
 
 -- | Applies, from left to right, given middlewares to the directory.
@@ -54,10 +55,10 @@ applyMiddlewares :: [Middleware] -> Directory -> Directory
 applyMiddlewares = flip $ foldl (flip ($))
 
 -- | Applies, from left to right, a list of steps to given directory.
-applySteps :: Directory -> [Step] -> Result Directory
+applySteps ::
+     (MonadCatch m, MonadThrow m) => Directory -> [Step m] -> m Directory
 applySteps = foldlM applyStep
   where
-    applyStep :: Directory -> Step -> Result Directory
     applyStep directory (fetched, middlewares) =
       applyMiddlewares middlewares . mergeEntries directory <$> fetched
 

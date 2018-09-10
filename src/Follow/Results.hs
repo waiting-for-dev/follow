@@ -7,27 +7,27 @@ process it, like writting to a file or sending to a database.
 
 -}
 module Follow.Results
-  ( WritableToFile(..)
+   -- WritableToFile(..)
+  (
   ) where
-
-import           Data.Text    (Text)
-import           Data.Text.IO as T (writeFile)
-import           Follow.Types (Result, unwrapResult)
-
--- | Something that can be written to a file.
-class WritableToFile a where
-  writeToFile :: FilePath -> a -> IO () -- ^ Writes content to given file path.
-
-instance WritableToFile Text where
-  writeToFile = T.writeFile
-
--- | A result can be written to a file if two conditions met: 1) Its
--- inner type is `WritableToFile`. 2) It is a successful result. If it
--- contains an error, it won't write anything and it will be silent about
--- it.
-instance WritableToFile a => WritableToFile (Result a) where
-  writeToFile path result = do
-    result' <- unwrapResult result
-    case result' of
-      Left error -> return ()
-      Right x    -> writeToFile path x
+--import           Data.Text    (Text)
+--import           Data.Text.IO as T (writeFile)
+--import           Follow.Types (Result, unwrapResult)
+--
+---- | Something that can be written to a file.
+--class WritableToFile a where
+--  writeToFile :: FilePath -> a -> IO () -- ^ Writes content to given file path.
+--
+--instance WritableToFile Text where
+--  writeToFile = T.writeFile
+--
+---- | A result can be written to a file if two conditions met: 1) Its
+---- inner type is `WritableToFile`. 2) It is a successful result. If it
+---- contains an error, it won't write anything and it will be silent about
+---- it.
+--instance WritableToFile a => WritableToFile (Result a) where
+--  writeToFile path result = do
+--    result' <- unwrapResult result
+--    case result' of
+--      Left error -> return ()
+--      Right x    -> writeToFile path x

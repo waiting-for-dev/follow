@@ -1,4 +1,5 @@
-{-# LANGUAGE DataKinds #-}
+{-# LANGUAGE DataKinds      #-}
+{-# LANGUAGE DeriveAnyClass #-}
 
 {-|
 Description: HTTP utils used elsewhere in the library.
@@ -9,12 +10,14 @@ within the `Follow` library.
 module HTTP.Follow
   ( parseUrl
   , getResponseBody
+  , HTTPError(..)
   ) where
 
+import           Control.Monad.Catch  (Exception, MonadCatch, MonadThrow,
+                                       throwM)
 import           Control.Monad.Except (throwError)
 import qualified Data.ByteString      as BS (ByteString)
 import qualified Data.ByteString.Lazy as BL (ByteString)
-import           Follow.Types         (FetchError (..), Result (..))
 import qualified Network.HTTP.Req     as R (GET (..), HttpException, MonadHttp,
                                             NoReqBody (..), Option, Scheme (..),
                                             Url, handleHttpException,
@@ -25,21 +28,23 @@ type Url s = (R.Url s, R.Option s)
 
 type EitherUrl = (Either (Url R.Http) (Url R.Https))
 
+-- HTTP errors
+data HTTPError =
+  URLWrongFormat
+  deriving (Eq, Show, Exception)
+
 -- | Parses a url type from a textual representation.
-parseUrl :: BS.ByteString -> Either FetchError EitherUrl
-parseUrl url =
-  case R.parseUrl url of
-    Nothing   -> Left URLWrongFormat
-    Just url' -> Right url'
+parseUrl :: (MonadCatch m, MonadThrow m) => BS.ByteString -> m EitherUrl
+parseUrl url = maybe (throwM URLWrongFormat) return (R.parseUrl url)
 
 -- | Performs a request to given url and returns just the response body
-getResponseBody :: EitherUrl -> Result BL.ByteString
+getResponseBody ::
+     (R.MonadHttp m, MonadCatch m, MonadThrow m) => EitherUrl -> m BL.ByteString
 getResponseBody = either fetch fetch
   where
-    fetch :: Url s -> Result BL.ByteString
     fetch (url, option) =
       R.responseBody <$> R.req R.GET url R.NoReqBody R.lbsResponse option
 
 -- | Declares how to handle request errors.
-instance R.MonadHttp Result where
-  handleHttpException e = throwError $ ResponseError e
+instance R.MonadHttp IO where
+  handleHttpException = throwM

@@ -27,16 +27,20 @@ module Follow.Digesters.Pocket
   , digest
   ) where
 
+import           Control.Monad.Catch          (MonadCatch, MonadThrow)
 import           Data.Aeson                   (Value, object, (.=))
 import qualified Data.HashMap.Strict          as HS
 import           Data.Maybe                   (fromJust, isJust)
 import           Data.Text                    (Text)
 import           Follow.Digesters.Pocket.Auth
 import           Follow.Types                 (Digester, Directory (..),
-                                               Entry (..), Result)
-import           Network.HTTP.Req             (https, (/:))
+                                               Entry (..))
+import           Network.HTTP.Req             (MonadHttp, https, (/:))
 
-digest :: Text -> Digester (Follow.Types.Result (HS.HashMap Text Value))
+digest ::
+     (MonadHttp m, MonadCatch m, MonadThrow m)
+  => Text
+  -> Digester (m (HS.HashMap Text Value))
 digest token directory = jsonPostResponseBody url body jsonHeaders
   where
     url = https "getpocket.com" /: "v3" /: "send"

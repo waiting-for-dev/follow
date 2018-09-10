@@ -2,14 +2,11 @@
 
 module FollowSpec where
 
-import           Control.Monad.Except (throwError)
-import           Data.Either          (fromRight)
-import           Data.Text            (Text)
-import qualified Data.Text            as T (concat)
+import           Data.Text         (Text)
+import qualified Data.Text         as T (concat)
 import           Follow
-import           Follow.Types         (Digester, Directory (..), Entry (..),
-                                       FetchError (..), Fetched, Middleware,
-                                       Recipe (..), Result, Subject (..))
+import           Follow.Types      (Digester, Directory (..), Entry (..),
+                                    Middleware, Recipe (..), Subject (..))
 import           Helpers.Factories
 import           Test.Hspec
 
@@ -23,19 +20,12 @@ spec = do
   describe ".directoryFromFetched" $ do
     it "populates Directory Entries out of given fetcher" $ do
       let entry = _entry {eTitle = Just "Fetched"}
-      let directory = directoryFromFetched (e2F entry) _subject
-      fromDirEntries <- unwrapResult $ fmap dEntries directory
-      fromRight [] fromDirEntries `shouldBe` [entry]
+      directory <- directoryFromFetched (e2F entry) _subject
+      dEntries directory `shouldBe` [entry]
     it "associates given subject with the Directory" $ do
       let subject = _subject {sTitle = "DirectoryFromFetched"}
-      let directory =
-            directoryFromFetched (return [_entry] :: Fetched) $ subject
-      fromDirSubject <- unwrapResult $ fmap dSubject directory
-      fromRight _subject fromDirSubject `shouldBe` subject
-    it "returns back any error from the fetcher" $ do
-      let fetched = (throwError $ URLWrongFormat) :: Fetched
-      result <- unwrapResult $ directoryFromFetched fetched _subject
-      show result `shouldBe` "Left URLWrongFormat"
+      directory <- directoryFromFetched (e2F _entry) subject
+      dSubject directory `shouldBe` subject
   describe ".applyMiddlewares" $ do
     it "applies in order given middlewares" $ do
       let directory = emptyDirectory _subject
@@ -47,13 +37,13 @@ spec = do
   describe ".directoryFromRecipe" $ do
     it "associates given subject to the created directory" $ do
       let recipe = Recipe _subject [] []
-      Right directory <- unwrapResult $ directoryFromRecipe recipe
+      directory <- directoryFromRecipe recipe
       dSubject directory `shouldBe` _subject
     it "concatenates given fetched entries" $ do
       let entry1 = _entry {eTitle = Just "Title 1"}
       let entry2 = _entry {eTitle = Just "Title 2"}
       let recipe = Recipe _subject [((e2F entry1), []), (e2F entry2, [])] []
-      Right directory <- unwrapResult $ directoryFromRecipe recipe
+      directory <- directoryFromRecipe recipe
       dEntries directory `shouldBe` [entry1, entry2]
     it "applies middlewares at each step" $ do
       let entry1 = _entry {eTitle = Just "Title 1"}
@@ -63,26 +53,24 @@ spec = do
               _subject
               [((e2F entry1), [removeEntriesMiddleware]), (e2F entry2, [])]
               []
-      Right directory <- unwrapResult $ directoryFromRecipe recipe
+      directory <- directoryFromRecipe recipe
       dEntries directory `shouldBe` [entry2]
     it "applies middlewares to fetched entries as a whole" $ do
       let entry1 = _entry {eTitle = Just "Title 1"}
       let recipe = Recipe _subject [(e2F entry1, [])] [removeEntriesMiddleware]
-      Right directory <- unwrapResult $ directoryFromRecipe recipe
+      directory <- directoryFromRecipe recipe
       dEntries directory `shouldBe` []
   describe ".applySteps" $ do
     let directory = emptyDirectory _subject
     it "concatenates given fetched entries" $ do
       let entry1 = _entry {eTitle = Just "Title 1"}
       let entry2 = _entry {eTitle = Just "Title 2"}
-      Right directory <-
-        unwrapResult $ applySteps directory [(e2F entry1, []), (e2F entry2, [])]
+      directory <- applySteps directory [(e2F entry1, []), (e2F entry2, [])]
       dEntries directory `shouldBe` [entry1, entry2]
     it "applies middlewares at each step" $ do
       let entry1 = _entry {eTitle = Just "Title 1"}
       let entry2 = _entry {eTitle = Just "Title 2"}
-      Right directory <-
-        unwrapResult $
+      directory <-
         applySteps
           directory
           [(e2F entry1, [removeEntriesMiddleware]), (e2F entry2, [])]

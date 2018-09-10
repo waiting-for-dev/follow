@@ -13,22 +13,14 @@ module Main where
 
 import           Data.Text               (Text)
 import qualified Data.Text               as T (concat, unpack)
-import           Follow                  (Result, unwrapResult)
 import           Follow.Digesters.Pocket
 
 main :: IO ()
-main =
-  withResult requestTokenStep $ \(rToken, url) -> do
-    putStrLn "Please, press ENTER after visiting:"
-    putStrLn $ T.unpack url
-    getChar
-    withResult (accessTokenStep rToken) $ \aToken -> do
-      putStrLn "Your access token is:"
-      putStrLn $ T.unpack aToken
-
-withResult :: Result a -> (a -> IO ()) -> IO ()
-withResult result f = do
-  unwrapped <- unwrapResult result
-  case unwrapped of
-    Left error -> print error
-    Right x    -> f x
+main = do
+  (rToken, url) <- requestTokenStep
+  putStrLn "Please, press ENTER after visiting:"
+  putStrLn $ T.unpack url
+  getChar
+  aToken <- accessTokenStep rToken
+  putStrLn "Your access token is:"
+  putStrLn $ T.unpack aToken

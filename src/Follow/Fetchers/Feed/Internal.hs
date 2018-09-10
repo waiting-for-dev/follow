@@ -1,3 +1,5 @@
+{-# LANGUAGE DeriveAnyClass #-}
+
 {-|
 Description: Wiring for the feed fecther strategy.
 
@@ -7,13 +9,15 @@ fetcher strategy.
 module Follow.Fetchers.Feed.Internal
   ( feedToEntries
   , parseFeed
+  , FeedError(..)
   ) where
 
+import           Control.Monad.Catch  (Exception, MonadCatch, MonadThrow,
+                                       throwM)
 import qualified Data.ByteString.Lazy as BL (ByteString)
 import           Data.Time            (UTCTime)
 import           Data.Time.Follow     (parseTimeGuess)
-import           Follow.Types         (Entry (..), FetchError (..),
-                                       FetchFeedError (..), Result (..))
+import           Follow.Types         (Entry (..))
 import           Text.Feed.Import     as F (parseFeedSource)
 import           Text.Feed.Query      as F (feedItems, getItemAuthor,
                                             getItemDescription, getItemId,
@@ -22,10 +26,14 @@ import           Text.Feed.Query      as F (feedItems, getItemAuthor,
                                             getItemTitle)
 import           Text.Feed.Types      as F (Feed, Item)
 
+-- | Error when parsing a feed
+data FeedError =
+  FeedWrongFormat
+  deriving (Show, Eq, Exception)
+
 -- | Parses a feed type from a textual representation.
-parseFeed :: BL.ByteString -> Either FetchError F.Feed
-parseFeed body =
-  maybe (Left $ FetchFeedError FeedWrongFormat) Right $ F.parseFeedSource body
+parseFeed :: (MonadThrow m, MonadCatch m) => BL.ByteString -> m F.Feed
+parseFeed body = maybe (throwM FeedWrongFormat) return (F.parseFeedSource body)
 
 -- | Transforms a feed to a list of entries.
 feedToEntries :: F.Feed -> [Entry]

@@ -7,20 +7,23 @@ entries from a URL pointing to a RSS or Atom feed.
 -}
 module Follow.Fetchers.Feed
   ( fetch
+  , FeedError(..)
   ) where
 
-import           Control.Monad.Except          (liftEither)
+import           Control.Monad.Catch           (MonadCatch, MonadThrow)
 import qualified Data.ByteString               as BS (ByteString)
 import           Follow.Fetchers.Feed.Internal
-import           Follow.Types                  (Fetcher)
+import           Follow.Types                  (Entry)
 import           HTTP.Follow                   (getResponseBody, parseUrl)
+import qualified Network.HTTP.Req              as R (MonadHttp)
 
 -- | The fetcher strategy. Notice that it takes the URL as a
 -- `BS.ByteString`, because URLs can't have characters outside of
 -- ASCCI range, so they are `Word8` values.
-fetch :: Fetcher BS.ByteString
+fetch ::
+     (R.MonadHttp m, MonadCatch m, MonadThrow m) => BS.ByteString -> m [Entry]
 fetch url = do
-  url' <- liftEither $ parseUrl url
+  url' <- parseUrl url
   response <- getResponseBody url'
-  feed <- liftEither $ parseFeed response
+  feed <- parseFeed response
   return $ feedToEntries feed

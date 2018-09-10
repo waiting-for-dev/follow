@@ -3,19 +3,15 @@
 module Follow.Fetchers.Feed.InternalSpec where
 
 import qualified Data.ByteString               as BS (ByteString)
-import           Data.Dynamic                  (toDyn)
-import           Data.Either                   (isRight)
-import           Data.Maybe                    (fromJust, isNothing)
 import           Data.Time                     (LocalTime)
 import           Follow.Fetchers.Feed.Internal
 import           Follow.Types                  (Entry (..))
-import qualified Network.HTTP.Req              as R (parseUrl)
 import           Test.Hspec
-import qualified Text.Feed.Import              as FI (parseFeedFromFile)
-import qualified Text.Feed.Types               as FT (Feed)
+import qualified Text.Feed.Import              as F (parseFeedFromFile)
+import qualified Text.Feed.Types               as F (Feed)
 
-loadFeedFromFile :: IO FT.Feed
-loadFeedFromFile = FI.parseFeedFromFile "test/Fixtures/rss.xml"
+loadFeedFromFile :: IO F.Feed
+loadFeedFromFile = F.parseFeedFromFile "test/Fixtures/rss.xml"
 
 spec :: Spec
 spec = do

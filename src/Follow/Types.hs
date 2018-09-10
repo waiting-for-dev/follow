@@ -16,13 +16,13 @@ module Follow.Types
   , Entry(..)
   , EntryGetter
   , Directory(..)
-  , Result(..)
-  , unwrapResult
-  , Fetcher
+  --, Result(..)
+  --, unwrapResult
+  --, Fetcher
   , Step
-  , Fetched
-  , FetchError(..)
-  , FetchFeedError(..)
+  --, Fetched
+  --, FetchError(..)
+  --, FetchFeedError(..)
   , Middleware
   , Digester
   ) where
@@ -85,47 +85,41 @@ type ArgumentsDSL = [(ArgumentName, Parse Dynamic)]
 -- | A final result of something. It has been obtained reaching the
 -- outside world and contains either what is expected or a fetch
 -- error. It is just a wrapper of `ExceptT`.
-newtype Result a = Result
-  { runResult :: ExceptT FetchError IO a
-  } deriving (Functor, Applicative, Monad, MonadIO, MonadError FetchError)
-
+-- newtype Result a = Result
+--   { runResult :: ExceptT FetchError IO a
+--   } deriving (Functor, Applicative, Monad, MonadIO, MonadError FetchError)
 -- | Unwraps a `Result` into its bare monad components. It is just a
 -- helper to avoid having to call both `runResult` and `runExceptT`.
-unwrapResult :: Result a -> IO (Either FetchError a)
-unwrapResult = runExceptT . runResult
-
+-- unwrapResult :: Result a -> IO (Either FetchError a)
+-- unwrapResult = runExceptT . runResult
 -- | Function to fetch a list of `Entry` from the outside world. See `Fetched`.
-type Fetcher arguments = arguments -> Fetched
-
+-- type Fetcher arguments = Eq arguments => arguments -> Fetched
 -- | Return value of a `Fetcher`: a list of `Entry` or an error (see `FetchError`).
-type Fetched = Result [Entry]
-
+-- type Fetched = Result [Entry]
 -- | An error returned by a `Fetcher`.
-data FetchError
-  = URLWrongFormat
-  | ResponseError R.HttpException
-  | FetchFeedError FetchFeedError
-  | TokenNotFound
-  | TokenDecodingError
-  deriving (Show)
-
+-- data FetchError
+--   = URLWrongFormat
+--   | ResponseError R.HttpException
+--   | FetchFeedError FetchFeedError
+--   | TokenNotFound
+--   | TokenDecodingError
+--   deriving (Show)
 -- | Errors returned by feed fetcher strategy. See `Follow.Fetchers.Feed`.
-data FetchFeedError =
-  FeedWrongFormat
-  deriving (Show)
-
+-- data FetchFeedError =
+--   FeedWrongFormat
+--   deriving (Show)
 -- | Middlewares are strategies to modify a directory. They are used
 -- after fetching entries but before digesting them.
 type Middleware = Directory -> Directory
 
 -- | A list of middlewares to be applied to some fetched entries.
-type Step = (Fetched, [Middleware])
+type Step m = (m [Entry], [Middleware])
 
 -- | A recipe is a specification of a complete strategy to create the
 -- content to follow a subject.
-data Recipe = Recipe
+data Recipe m = Recipe
   { rSubject     :: Subject -- ^ The subject being followed.
-  , rSteps       :: [Step] -- ^ List of steps to be applied.
+  , rSteps       :: [Step m] -- ^ List of steps to be applied.
   , rMiddlewares :: [Middleware] -- ^ List of middlewares to apply to the result of all steps.
   }
 
