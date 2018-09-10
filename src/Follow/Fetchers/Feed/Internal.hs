@@ -12,8 +12,7 @@ module Follow.Fetchers.Feed.Internal
   , FeedError(..)
   ) where
 
-import           Control.Monad.Catch  (Exception, MonadCatch, MonadThrow,
-                                       throwM)
+import           Control.Monad.Catch  (Exception, MonadThrow, throwM)
 import qualified Data.ByteString.Lazy as BL (ByteString)
 import           Data.Time            (UTCTime)
 import           Data.Time.Follow     (parseTimeGuess)
@@ -26,13 +25,13 @@ import           Text.Feed.Query      as F (feedItems, getItemAuthor,
                                             getItemTitle)
 import           Text.Feed.Types      as F (Feed, Item)
 
--- | Error when parsing a feed
+-- | Errors when parsing a feed
 data FeedError =
   FeedWrongFormat
   deriving (Show, Eq, Exception)
 
 -- | Parses a feed type from a textual representation.
-parseFeed :: (MonadThrow m, MonadCatch m) => BL.ByteString -> m F.Feed
+parseFeed :: MonadThrow m => BL.ByteString -> m F.Feed
 parseFeed body = maybe (throwM FeedWrongFormat) return (F.parseFeedSource body)
 
 -- | Transforms a feed to a list of entries.

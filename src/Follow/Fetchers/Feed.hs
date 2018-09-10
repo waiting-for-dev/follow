@@ -10,18 +10,15 @@ module Follow.Fetchers.Feed
   , FeedError(..)
   ) where
 
-import           Control.Monad.Catch           (MonadCatch, MonadThrow)
+import           Control.Monad.Catch           (MonadThrow)
 import qualified Data.ByteString               as BS (ByteString)
 import           Follow.Fetchers.Feed.Internal
 import           Follow.Types                  (Entry)
 import           HTTP.Follow                   (getResponseBody, parseUrl)
 import qualified Network.HTTP.Req              as R (MonadHttp)
 
--- | The fetcher strategy. Notice that it takes the URL as a
--- `BS.ByteString`, because URLs can't have characters outside of
--- ASCCI range, so they are `Word8` values.
-fetch ::
-     (R.MonadHttp m, MonadCatch m, MonadThrow m) => BS.ByteString -> m [Entry]
+-- | The fetcher strategy.
+fetch :: (R.MonadHttp m, MonadThrow m) => BS.ByteString -> m [Entry]
 fetch url = do
   url' <- parseUrl url
   response <- getResponseBody url'

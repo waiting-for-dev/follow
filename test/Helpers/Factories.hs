@@ -10,7 +10,7 @@ module Helpers.Factories
   , e2F
   ) where
 
-import           Control.Monad.Catch         (MonadCatch, MonadThrow)
+import           Control.Monad.Catch         (MonadThrow)
 import           Follow.Fetchers.WebScraping (Selector (..))
 import           Follow.Types                (Directory (..), Entry (..),
                                               Recipe (..), Subject (..))
@@ -33,10 +33,10 @@ _subject =
 _directory :: Directory
 _directory = Directory {dSubject = _subject, dEntries = [_entry]}
 
-_recipe :: (MonadCatch m, MonadThrow m) => Recipe m
+_recipe :: (MonadThrow m) => Recipe m
 _recipe = Recipe {rSubject = _subject, rSteps = [], rMiddlewares = []}
 
-e2F :: (MonadCatch m, MonadThrow m) => Entry -> m [Entry]
+e2F :: (MonadThrow m) => Entry -> m [Entry]
 e2F entry = return [entry]
 
 _selector :: Selector

@@ -30,7 +30,7 @@ selector = Selector {
   , selPublishDate = Nothing
 }
 
-result :: Fetched
+result :: IO [Entry]
 result = fetch ("http://an_url.com", selector)
 @
 -}
@@ -42,8 +42,6 @@ module Follow.Fetchers.WebScraping
   , HTMLAttribute
   ) where
 
-import           Control.Monad.Catch                  (Exception, MonadCatch,
-                                                       MonadThrow)
 import qualified Data.ByteString                      as BS (ByteString)
 import qualified Data.ByteString.Lazy                 as BL (ByteString)
 import           Data.Text                            (Text)

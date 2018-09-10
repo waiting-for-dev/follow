@@ -13,13 +13,7 @@ module Follow
   , Subject(..)
   , Entry(..)
   , Directory(..)
-  --, Result(..)
-  --, unwrapResult
-  --, Fetcher
   , Step
-  --, Fetched
-  --, FetchError(..)
-  --, FetchFeedError(..)
   , Middleware
   , Digester
   , directoryFromRecipe
@@ -30,7 +24,7 @@ module Follow
   , mergeEntries
   ) where
 
-import           Control.Monad.Catch (MonadCatch, MonadThrow)
+import           Control.Monad.Catch (MonadThrow)
 import           Data.Foldable       (foldlM)
 import           Data.List           (nub)
 import           Follow.Types        (Digester, Directory (..), Entry (..),
@@ -38,7 +32,7 @@ import           Follow.Types        (Digester, Directory (..), Entry (..),
                                       Subject (..))
 
 -- | Builds a directory from the specification stored in a recipe
-directoryFromRecipe :: (MonadCatch m, MonadThrow m) => Recipe m -> m Directory
+directoryFromRecipe :: MonadThrow m => Recipe m -> m Directory
 directoryFromRecipe recipe =
   let Recipe {rSubject = subject, rSteps = steps, rMiddlewares = middlewares} =
         recipe
@@ -46,8 +40,7 @@ directoryFromRecipe recipe =
 
 -- | Helper to build a directory from a subject and a list of fetched
 -- entries.
-directoryFromFetched ::
-     (MonadThrow m, MonadCatch m) => m [Entry] -> Subject -> m Directory
+directoryFromFetched :: MonadThrow m => m [Entry] -> Subject -> m Directory
 directoryFromFetched fetched header = Directory header <$> fetched
 
 -- | Applies, from left to right, given middlewares to the directory.
@@ -55,8 +48,7 @@ applyMiddlewares :: [Middleware] -> Directory -> Directory
 applyMiddlewares = flip $ foldl (flip ($))
 
 -- | Applies, from left to right, a list of steps to given directory.
-applySteps ::
-     (MonadCatch m, MonadThrow m) => Directory -> [Step m] -> m Directory
+applySteps :: MonadThrow m => Directory -> [Step m] -> m Directory
 applySteps = foldlM applyStep
   where
     applyStep directory (fetched, middlewares) =

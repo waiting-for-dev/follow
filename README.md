@@ -42,14 +42,8 @@ haskellDirectory' =
 ## Fetchers
 
 Of course, building list of entries by hand is not very
-useful. Fetchers are functions which reach the outside world to return
-a list of `Entry` or an error.
-
-`Fetcher arguments` is just a type synonym for the function type
-`arguments -> Fetched`, where `Fetched` is in turn a synonym for
-`Result [Entry]`; just an [`ExceptT`](
-http://hackage.haskell.org/package/transformers-0.5.5.0/docs/Control-Monad-Trans-Except.html#g:2)
-wrapping.
+useful. Fetchers are functions which usually reach the outside world
+to return a list of `Entry` and which can throw an error.
 
 Any fetcher can be used, but `Follow` tries to ship with common
 ones. Right now there are two fetchers available:
@@ -64,7 +58,7 @@ some fetched content:
 ```haskell
 import qualified Follow.Fetchers.Feed as Feed
 
-haskellDirectory :: Result Directory
+haskellDirectory :: IO Directory
 haskellDirectory =
   directoryFromFetched (Feed.fetch "https://bartoszmilewski.com/feed/") subject
 ```
@@ -87,7 +81,7 @@ there are two middlewares:
 ```haskell
 import qualified Follow.Middlewares.Filter as Filter
 
-haskellFilteredDirectory :: Result Directory
+haskellFilteredDirectory :: IO Directory
 haskellFilteredDirectory =
   Filter.apply ("Haskell" `infixP` eTitle) <$> haskellDirectory
 ```
@@ -109,7 +103,7 @@ now two of them are provided:
 ```haskell
 import Follow.Digesters.SimpleText
 
-haskellContent :: Result Text
+haskellContent :: IO Text
 haskellContent = SimpleText.digest haskellFilteredDirectory
 ```
 

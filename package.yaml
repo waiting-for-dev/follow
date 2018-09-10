@@ -26,9 +26,7 @@ dependencies:
 - bytestring
 - feed
 - text
-- http-client
 - req
-- mtl
 - time
 - hxt
 - HandsomeSoup

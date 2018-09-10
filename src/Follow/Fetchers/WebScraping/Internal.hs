@@ -13,7 +13,6 @@ module Follow.Fetchers.WebScraping.Internal
   ) where
 
 import           Control.Monad              (join)
-import           Control.Monad.Except       (liftIO)
 import qualified Data.ByteString            as BS (ByteString)
 import qualified Data.ByteString.Lazy       as BL (ByteString)
 import qualified Data.ByteString.Lazy.Char8 as BL (unpack)

@@ -13,9 +13,7 @@ module HTTP.Follow
   , HTTPError(..)
   ) where
 
-import           Control.Monad.Catch  (Exception, MonadCatch, MonadThrow,
-                                       throwM)
-import           Control.Monad.Except (throwError)
+import           Control.Monad.Catch  (Exception, MonadThrow, throwM)
 import qualified Data.ByteString      as BS (ByteString)
 import qualified Data.ByteString.Lazy as BL (ByteString)
 import qualified Network.HTTP.Req     as R (GET (..), HttpException, MonadHttp,
@@ -34,17 +32,16 @@ data HTTPError =
   deriving (Eq, Show, Exception)
 
 -- | Parses a url type from a textual representation.
-parseUrl :: (MonadCatch m, MonadThrow m) => BS.ByteString -> m EitherUrl
+parseUrl :: (MonadThrow m) => BS.ByteString -> m EitherUrl
 parseUrl url = maybe (throwM URLWrongFormat) return (R.parseUrl url)
 
 -- | Performs a request to given url and returns just the response body
-getResponseBody ::
-     (R.MonadHttp m, MonadCatch m, MonadThrow m) => EitherUrl -> m BL.ByteString
+getResponseBody :: (R.MonadHttp m, MonadThrow m) => EitherUrl -> m BL.ByteString
 getResponseBody = either fetch fetch
   where
     fetch (url, option) =
       R.responseBody <$> R.req R.GET url R.NoReqBody R.lbsResponse option
 
--- | Declares how to handle request errors.
+-- | Declares how to handle request errors for IO monad.
 instance R.MonadHttp IO where
   handleHttpException = throwM
