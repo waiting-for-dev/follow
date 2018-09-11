@@ -1,6 +1,0 @@
-VERSION 1.0
-TITLE title
-DESCRIPTION description
-TAGS tag_a, tag_b
-ARG1 value_1
-ARG2 value_2

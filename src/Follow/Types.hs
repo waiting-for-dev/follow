@@ -4,12 +4,7 @@ Description: Definition of types.
 This module defines the types used in the whole application.
 -}
 module Follow.Types
-  ( Parse
-  , ParseResult
-  , ArgumentName
-  , Arguments
-  , ArgumentsDSL
-  , Recipe(..)
+  ( Recipe(..)
   , Subject(..)
   , Entry(..)
   , EntryGetter
@@ -19,10 +14,8 @@ module Follow.Types
   , Digester
   ) where
 
-import           Data.Dynamic (Dynamic)
-import           Data.Text    (Text)
-import           Data.Time    (LocalTime)
-import           Text.Parsec  (ParseError, Parsec)
+import           Data.Text (Text)
+import           Data.Time (LocalTime)
 
 -- | Subject being followed. The whole idea of `Follow` is being able
 -- to build strategies to gather URIs for the content published about any
@@ -53,23 +46,7 @@ data Directory = Directory
   , dEntries :: [Entry] -- ^ The list of entries.
   } deriving (Eq, Show)
 
--- Type alias for the common parsing format for the DSL: from a string
--- to whatever without any state.
-type Parse = Parsec String ()
-
--- | The result of a parsing: a `Follow.Subject` or an error.
-type ParseResult = Either ParseError Subject
-
-type ArgumentName = String
-
--- | List of arguments; pairs of name and value.
-type Arguments = [(ArgumentName, Dynamic)]
-
--- | Concrete fetchers must define an ArgumentsDSL method that
--- defines a mapping between argument names and its expected DSL for the
--- value.
-type ArgumentsDSL = [(ArgumentName, Parse Dynamic)]
-
+-- | Middleware does something to a directory.
 type Middleware = Directory -> Directory
 
 -- | A list of middlewares to be applied to some fetched entries.

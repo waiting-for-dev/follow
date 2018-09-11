@@ -21,8 +21,6 @@ description:         Please, see the README on GitHub at <https://github.com/wai
 
 dependencies:
 - base >= 4.7 && < 5
-- parsec
-- network-uri
 - bytestring
 - feed
 - text
@@ -61,6 +59,5 @@ tests:
     - hspec
 
 data-files:
-  - test/Fixtures/Subject
   - test/Fixtures/rss.xml
   - test/Fixtures/webscraping.html

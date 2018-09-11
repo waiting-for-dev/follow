@@ -10,7 +10,6 @@ module Helpers.EndPointFixtures
 
 import qualified Data.ByteString       as BS (ByteString, concat)
 import qualified Data.ByteString.Char8 as BS (pack)
-import           Text.Parsec           (parse)
 
 simpleEndPoint :: BS.ByteString
 simpleEndPoint = "http://httpbin.org"
