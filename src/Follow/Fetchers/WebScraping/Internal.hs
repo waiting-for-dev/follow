@@ -37,7 +37,7 @@ data Selector = Selector
   , selDescription :: Maybe SelectorItem
   , selAuthor      :: Maybe SelectorItem
   , selPublishDate :: Maybe SelectorItem
-  }
+  } deriving (Eq, Show)
 
 -- | Selector to use when scraping an `Entry` item.
 data SelectorItem
@@ -46,6 +46,7 @@ data SelectorItem
   | Attr CSSSelector
          HTMLAttribute -- ^ This selector will take the value of given
   -- argument in the tag matched by given css selector.
+  deriving (Eq, Show)
 
 -- | A CSS2 selector.
 type CSSSelector = Text

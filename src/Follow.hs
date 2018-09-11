@@ -12,6 +12,7 @@ module Follow
   ( Recipe(..)
   , Subject(..)
   , Entry(..)
+  , Fetched
   , Directory(..)
   , Step
   , Middleware
@@ -28,7 +29,7 @@ import           Control.Monad.Catch (MonadThrow)
 import           Data.Foldable       (foldlM)
 import           Data.List           (nub)
 import           Follow.Types        (Digester, Directory (..), Entry (..),
-                                      Middleware, Recipe (..), Step,
+                                      Fetched, Middleware, Recipe (..), Step,
                                       Subject (..))
 
 -- | Builds a directory from the specification stored in a recipe

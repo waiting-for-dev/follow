@@ -2,7 +2,6 @@
 
 module Follow.Fetchers.FeedSpec where
 
-import qualified Data.ByteString          as BS (ByteString)
 import           Data.Maybe               (fromJust)
 import qualified Data.Text                as T (isInfixOf, pack)
 import           Follow.Fetchers.Feed

@@ -31,6 +31,7 @@ data Encoding
   | UTF16BE
   | UTF32LE
   | UTF32BE
+  deriving (Eq, Show)
 
 -- | Middleware operation. Give it a `Encoding` and get back the
 -- decoded directory.

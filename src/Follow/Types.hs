@@ -7,6 +7,7 @@ module Follow.Types
   ( Recipe(..)
   , Subject(..)
   , Entry(..)
+  , Fetched
   , EntryGetter
   , Directory(..)
   , Step
@@ -16,6 +17,7 @@ module Follow.Types
 
 import           Data.Text (Text)
 import           Data.Time (LocalTime)
+import           Data.Yaml (Object, Parser)
 
 -- | Subject being followed. The whole idea of `Follow` is being able
 -- to build strategies to gather URIs for the content published about any
@@ -36,6 +38,9 @@ data Entry = Entry
   , ePublishDate :: Maybe LocalTime -- ^ Item publish date.
   } deriving (Eq, Show)
 
+-- | Entries fetched usually from the outside world.
+type Fetched m = m [Entry]
+
 -- | Function that returns a field from an `Entry`. They are the -
 -- automatically generated methods for the `Entry` record.
 type EntryGetter a = Entry -> Maybe a
@@ -50,7 +55,7 @@ data Directory = Directory
 type Middleware = Directory -> Directory
 
 -- | A list of middlewares to be applied to some fetched entries.
-type Step m = (m [Entry], [Middleware])
+type Step m = (Fetched m, [Middleware])
 
 -- | A recipe is a specification of a complete strategy to create the
 -- content to follow a subject.

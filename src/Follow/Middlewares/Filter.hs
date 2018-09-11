@@ -20,6 +20,8 @@ module Follow.Middlewares.Filter
   ( apply
   , Predicate
   , equalP
+  , lessP
+  , greaterP
   , infixP
   , prefixP
   , suffixP
