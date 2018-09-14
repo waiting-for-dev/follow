@@ -1,18 +1,18 @@
 name:                follow
-version:             0.1.0.0
-github:              "githubuser/follow"
-license:             BSD3
-author:              "Author name here"
-maintainer:          "example@example.com"
-copyright:           "2018 Author name here"
+version:             0.0.1
+github:              "waiting-for-dev/follow"
+license:             LGPL-3 
+author:              "Marc Busqué Pérez"
+maintainer:          "marc@lamarciana.com"
+copyright:           "2018 Marc Busqué Pérez"
 
 extra-source-files:
 - README.md
 - ChangeLog.md
 
 # Metadata used when publishing your package
-# synopsis:            Short description of your package
-# category:            Web
+synopsis:            Haskell library to follow content published on any subject.
+category:            Web
 
 # To avoid duplicated efforts in documentation and dealing with the
 # complications of embedding Haddock markup inside cabal files, it is

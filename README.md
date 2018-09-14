@@ -202,3 +202,19 @@ recipe back:
 recipe' <- decodeFileThrow "/your/path/recipe.yml" :: IO (Recipe IO)
 directory' = directoryFromRecipe recipe'
 ```
+
+## Contributing
+
+Bug reports and pull requests are welcome on GitHub at
+https://github.com/waiting-for-dev/follow. This project is
+intended to be a safe, welcoming space for collaboration, and
+contributors are expected to adhere to the [Contributor
+Covenant](http://contributor-covenant.org) code of conduct.
+
+## Release Policy
+`follow` follows the principles of [semantic versioning](http://semver.org/).
+
+## License
+
+The package is available as open source under the terms of the [GNU
+LGPLv3 License](http://opensource.org/licenses/LGPL-3.0).
