@@ -13,12 +13,12 @@ module Follow.Fetchers.Feed
 import           Control.Monad.Catch           (MonadThrow)
 import qualified Data.ByteString               as BS (ByteString)
 import           Follow.Fetchers.Feed.Internal
-import           Follow.Types                  (Entry)
+import           Follow.Types                  (Fetched)
 import           HTTP.Follow                   (getResponseBody, parseUrl)
 import qualified Network.HTTP.Req              as R (MonadHttp)
 
 -- | The fetcher strategy.
-fetch :: (R.MonadHttp m, MonadThrow m) => BS.ByteString -> m [Entry]
+fetch :: (R.MonadHttp m, MonadThrow m) => BS.ByteString -> Fetched m
 fetch url = do
   url' <- parseUrl url
   response <- getResponseBody url'

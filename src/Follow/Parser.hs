@@ -18,6 +18,7 @@ module Follow.Parser
   ) where
 
 import           Control.Monad.Catch         (MonadThrow, throwM)
+import           Control.Monad.IO.Class      (MonadIO)
 import           Data.ByteString             (ByteString)
 import           Data.Text                   (Text)
 import qualified Data.Text                   as T (unpack)
@@ -310,7 +311,7 @@ instance FromJSON M.Filter.Predicate where
 --     url: http://someurl.com
 --     selector: # See `Selector` instance
 --   @
-instance FromJSON (Fetched IO) where
+instance (MonadThrow m, MonadHttp m) => FromJSON (Fetched m) where
   parseJSON =
     withObject "Fetcher" $ \v -> do
       kind <- v .: "type"
@@ -355,7 +356,7 @@ instance FromJSON Middleware where
 --   middlewares:"
 --     - # See `Middleware` instance
 --  @
-instance FromJSON (Recipe IO) where
+instance (MonadThrow m, MonadHttp m) => FromJSON (Recipe m) where
   parseJSON =
     withObject "Recipe" $ \v -> do
       subject <- v .: "subject"
@@ -364,7 +365,8 @@ instance FromJSON (Recipe IO) where
       return
         Recipe {rSubject = subject, rSteps = steps, rMiddlewares = middlewares}
 
-dispatchToFetcher :: Text -> Value -> Parser (Fetched IO)
+dispatchToFetcher ::
+     (MonadThrow m, MonadHttp m) => Text -> Value -> Parser (Fetched m)
 dispatchToFetcher kind options =
   case kind of
     "feed"        -> withObject "Options" parseFFeed options
@@ -375,7 +377,7 @@ parseFFeed o = do
   url <- o .: "url"
   return $ F.Feed.fetch (T.encodeUtf8 url)
 
-parseFWebScraping :: FetcherParser IO
+parseFWebScraping :: (MonadThrow m, MonadHttp m) => FetcherParser m
 parseFWebScraping o = do
   url <- o .: "url"
   selector <- o .: "selector"

@@ -42,6 +42,8 @@ module Follow.Fetchers.WebScraping
   , HTMLAttribute
   ) where
 
+import           Control.Monad.Catch                  (MonadThrow)
+import           Control.Monad.IO.Class               (MonadIO, liftIO)
 import qualified Data.ByteString                      as BS (ByteString)
 import qualified Data.ByteString.Lazy                 as BL (ByteString)
 import           Data.Text                            (Text)
@@ -50,13 +52,18 @@ import           Follow.Fetchers.WebScraping.Internal (CSSSelector,
                                                        Selector (..),
                                                        SelectorItem (..),
                                                        htmlToEntries)
-import           Follow.Types                         (Entry (..))
+import           Follow.Types                         (Fetched)
 import           HTTP.Follow                          (getResponseBody,
                                                        parseUrl)
+import           Network.HTTP.Req                     (MonadHttp)
 
 -- | Fetches entries from given url using specified selectors.
-fetch :: BS.ByteString -> Selector -> IO [Entry]
+fetch ::
+     (MonadThrow m, MonadIO m, MonadHttp m)
+  => BS.ByteString
+  -> Selector
+  -> Fetched m
 fetch url selector = do
   url' <- parseUrl url
   response <- getResponseBody url'
-  htmlToEntries response selector
+  liftIO $ htmlToEntries response selector
