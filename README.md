@@ -1,49 +1,64 @@
 # Follow
 
-`Follow` is a Haskell application to build recipes which allow you to
+`Follow` is a Haskell library to build recipes which allow you to
 follow the content published about any subject you are interested.
+
+Here bellow you have a quick tutorial you can follow.  Just run the
+snippets of code in the repl.
+
+```haskell
+:set -XOverloadedStrings
+import Follow
+import Data.Time (LocalTime)
+import Control.Monad (join)
+import qualified Data.Text.IO as T (writeFile)
+import Data.Yaml (decodeFileThrough)
+```
 
 ## Subject
 
-A subject is represented in a `Subject` type. A subject consists of a
-title, a description and a list of tags, all of them being of type
-`Text`:
+A subject is just a bunch of information about what is being
+followed. It consists of a title, a description and a list of tags,
 
 ```haskell
-{-# LANGUAGE OverloadedStrings #-}
-
-import Follow
-
-haskellSubject :: Subject
-haskellSubject =
-  Subject "Haskell" "Some resources about Haskell" ["haskell", "programming"]
+haskell =
+  Subject
+    { sTitle = "Haskell"
+    , sDescription = "Some resources about Haskell"
+    , sTags = ["haskell", "programming"]
+    }
 ```
 
 ## Directory
 
-A `Directory` is just a `Subject` and a list of `Entry`. An `Entry` is
-an item meant to contain an URI with content relative to the
-associated subject.
+A directory is just a subject and a list of entries.
+
+An entry is an item meant to contain an URI with content relative to
+the associated subject along with associated information.
 
 ```haskell
-haskellDirectory' :: Directory
-haskellDirectory' =
+manualDirectory =
   Directory
-    haskellSubject
-    [ Entry
-        (Just "https://bartoszmilewski.com/2013/06/19/basics-of-haskell/")
-        (Just "basics-of-haskell")
-        (Just "Basics of Haskell")
-        (Just "Introductory material for Haskell")
-        (Just "Bartosz Milwesli")
-    ]
+    { dSubject = haskell
+    , dEntries =
+        [ Entry
+            { eURI =
+                Just "https://bartoszmilewski.com/2013/06/19/basics-of-haskell/"
+            , eGUID = Just "basics-of-haskell"
+            , eTitle = Just "Basics of Haskell"
+            , eDescription = Just "Introductory material for Haskell"
+            , eAuthor = Just "Bartosz Milewski"
+            , ePublishDate = Just (read "2013-06-19 14:14:00" :: LocalTime)
+            }
+        ]
+    }
 ```
 
 ## Fetchers
 
 Of course, building list of entries by hand is not very
 useful. Fetchers are functions which usually reach the outside world
-to return a list of `Entry` and which can throw an error.
+to return a list of entries and which can throw an error.
 
 Any fetcher can be used, but `Follow` tries to ship with common
 ones. Right now there are two fetchers available:
@@ -58,19 +73,19 @@ some fetched content:
 ```haskell
 import qualified Follow.Fetchers.Feed as Feed
 
-haskellDirectory :: IO Directory
-haskellDirectory =
-  directoryFromFetched (Feed.fetch "https://bartoszmilewski.com/feed/") subject
+directory =
+  directoryFromFetched (Feed.fetch "https://bartoszmilewski.com/feed/") haskell
 ```
 
 ## Middlewares
 
 Fetched content may need some further processing in order to fit what
-is actually desired. A `Middleware` is a function `Directory ->
-Directory` which purpose is exactly that.
+is actually desired. A middleware is a function which transforms a
+directory into another directory, allowing us to do any kind of
+transformation.
 
 The aim of `Follow` is to provide some common middlewares. For now,
-there are two middlewares:
+there are these ones:
 
 - [Filter](src/Follow/Middlewares/Filter.hs): Filter entries according
   some predicate.
@@ -79,21 +94,20 @@ there are two middlewares:
   UTF8 or other encodings.
 
 ```haskell
-import qualified Follow.Middlewares.Filter as Filter
+import qualified Follow.Middlewares.Sort as Sort
 
-haskellFilteredDirectory :: IO Directory
-haskellFilteredDirectory =
-  Filter.apply ("Haskell" `infixP` eTitle) <$> haskellDirectory
+sortedDirectory =
+  Sort.apply (Sort.byGetter eTitle) <$> directory
 ```
 
 ## Digesters
 
 Once you have your distillate content, you need some way to consume
-it. A `Digester` is a function `Directory -> a` that transform a
-`Directory` into anything that can be consumed by an end user.
+it. A `Digester` is a function which transforms a directory into
+anything that can be consumed by an end user.
 
 As before, `Follow` aims to provide useful ones out of the box. Right
-now two of them are provided:
+now the following are available:
 
 - [Simple Text](src/Follow/Digesters/SimpleText.hs): Simple textual
   representation of the directory.
@@ -101,10 +115,15 @@ now two of them are provided:
   [Pocket](https://getpocket.com).
 
 ```haskell
-import Follow.Digesters.SimpleText
+import qualified Follow.Digesters.SimpleText as SimpleText
 
-haskellContent :: IO Text
-haskellContent = SimpleText.digest haskellFilteredDirectory
+content = SimpleText.digest <$> sortedDirectory
+```
+
+Now, for example, you are ready to save the content to a file:
+
+```haskell
+join $ T.writeFile "/your/path/haskell.txt" <$> content
 ```
 
 ## Recipes: Combining sources and middlewares
@@ -126,21 +145,60 @@ To build the recipe you need to provide three fields:
 - A list of middlewares to apply to the directory resulted after applying the list of fetched/middlewares.
 
 ```haskell
-haskellRecipe :: Recipe
-haskellRecipe = 
+haskellRecipe =
   Recipe
-    haskellSubject
-    [ ( Feed.fetch "https://bartoszmilewski.com/feed/"
-      , [Filter.apply (eTitle `infixP` "Haskell")])
-    , (Feed.fetch "https://planet.haskell.org/rss20.xml"
-      , [])
-    ]
-    []
+    { rSubject = haskell
+    , rSteps =
+        [ ( Feed.fetch "https://bartoszmilewski.com/feed/"
+          , [Sort.apply (Sort.byGetter eTitle)])
+        , (Feed.fetch "https://planet.haskell.org/rss20.xml", [])
+        ]
+    , rMiddlewares = []
+    }
 ```
 
 You can combine the function `directoryFromRecipe` and some digester
 to quickly consume a recipe:
 
 ```haskell
-SimpleText.digest <$> directoryFromRecipe recipe
+SimpleText.digest <$> directoryFromRecipe haskellRecipe
+```
+
+## Collecting recipes
+
+One nice thing in Follow is that you don't need to create the recipes
+programmatically each time you need them. Instead, you can store them
+in a [YAML](https://en.wikipedia.org/wiki/YAML) file and just parse
+them when you need.
+
+For example, the previous recipe can be represented in a file
+`recipe.yml` as the following:
+
+```yaml
+subject:
+  title: Haskell
+  description: Some resources about Haskell
+  tags: [haskell, programming]
+steps:
+  -
+    - type: feed
+      options:
+        url: "https://bartoszmilewski.com/feed/"
+    -
+      - type: sort
+        options:
+          function:
+            type: by_field
+            options:
+              field: title
+middlewares: []
+```
+
+You can use now decode functions in
+[`Data.Yaml`](https://hackage.haskell.org/package/yaml) to get the
+recipe back:
+
+```haskell
+recipe' <- decodeFileThrow "/your/path/recipe.yml" :: IO (Recipe IO)
+directory' = directoryFromRecipe recipe'
 ```
