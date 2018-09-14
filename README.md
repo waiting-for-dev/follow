@@ -203,6 +203,9 @@ recipe' <- decodeFileThrow "/your/path/recipe.yml" :: IO (Recipe IO)
 directory' = directoryFromRecipe recipe'
 ```
 
+Look at [`src/Follow/Parser.hs`](src/Follow/Parser.hs) for details about
+encoding each kind of fetcher and middleware.
+
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at
