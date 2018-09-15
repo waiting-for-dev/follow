@@ -10,7 +10,6 @@ snippets of code in the repl.
 :set -XOverloadedStrings
 import Follow
 import Data.Time (LocalTime)
-import Control.Monad (join)
 import qualified Data.Text.IO as T (writeFile)
 import Data.Yaml (decodeFileThrough)
 ```
@@ -123,7 +122,7 @@ content = SimpleText.digest <$> sortedDirectory
 Now, for example, you are ready to save the content to a file:
 
 ```haskell
-join $ T.writeFile "/your/path/haskell.txt" <$> content
+content >>= T.writeFile "/your/path/haskell.txt"
 ```
 
 ## Recipes: Combining sources and middlewares
