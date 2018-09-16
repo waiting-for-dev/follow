@@ -30,8 +30,7 @@ selector = Selector {
   , selPublishDate = Nothing
 }
 
-result :: IO [Entry]
-result = fetch ("http://an_url.com", selector)
+result = fetch "http://an_url.com" selector
 @
 -}
 module Follow.Fetchers.WebScraping
