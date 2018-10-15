@@ -32,7 +32,6 @@ dependencies:
 - unordered-containers
 - exceptions
 - yaml
-- transformers
 
 library:
   source-dirs: src
