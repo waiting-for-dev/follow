@@ -25,6 +25,7 @@ module Follow
   , mergeEntries
   ) where
 
+import           Control.Arrow       ((>>>))
 import           Control.Monad.Catch (MonadThrow)
 import           Data.Foldable       (foldlM)
 import           Data.List           (nub)
@@ -45,8 +46,9 @@ directoryFromFetched :: MonadThrow m => m [Entry] -> Subject -> m Directory
 directoryFromFetched fetched header = Directory header <$> fetched
 
 -- | Applies, from left to right, given middlewares to the directory.
-applyMiddlewares :: [Middleware] -> Directory -> Directory
-applyMiddlewares = flip $ foldl (flip ($))
+applyMiddlewares :: [Middleware] -> Middleware
+applyMiddlewares [] = id
+applyMiddlewares ms = foldl1 (>>>) ms
 
 -- | Applies, from left to right, a list of steps to given directory.
 applySteps :: MonadThrow m => Directory -> [Step m] -> m Directory
